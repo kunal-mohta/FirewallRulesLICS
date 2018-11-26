@@ -2,13 +2,16 @@
 mainStr(["A", "B", "C", "D", "E", "F", "G", "H"]).
 
 % ----------------- Utilities ----------------- %
+
+% last member of list
 last(X,[X]).
 last(X,[_|Z]) :- last(X,Z).
 
+% is member of list checking
 member(X, [X|_]).
 member(X, [_|Z]) :- member(X, Z).
 
-
+% for the range types - e.g. B-D
 getSubList([], _, F, F, _).
 getSubList([H|Main], [H|Ends], Fin, Acc, 0) :-
   getSubList(Main, [H|Ends], Fin, [H|Acc], 1), !.
@@ -34,6 +37,7 @@ rule('drop adapter A-C').
 
 % ----------------- Parsing Rules ----------------- %
 
+% normal
 adapter(IdList, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
@@ -41,6 +45,7 @@ adapter(IdList, ResponseTerm) :-
   last(Ids, SplitText),
   split_string(Ids, ',', '', IdList).
 
+% comma separated
 adapter(IdList, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
@@ -50,6 +55,7 @@ adapter(IdList, ResponseTerm) :-
   member(',', IdChars),
   split_string(Ids, ',', '', IdList).
 
+% range type
 adapter(IdList, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),

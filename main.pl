@@ -4,10 +4,13 @@ packet(AdapterId, EtherProtoId, EtherVId, X) :-
   etherProto(X).
 
 packet(EtherProtoId, X) :-
-  etherNet(EtherProtoId, X).
+  etherNet(EtherProtoIds, X),
+  member(EtherProtoId, EtherProtoIds).
 
 % packet(EtherProtoId, X) :-
   % etherNet(EtherProtoId, X).
 
 packet(EtherProtoId, EtherVId, X) :-
-  etherNet(EtherProtoId, EtherVId, X).
+  etherNet(EtherProtoIds, EtherVIds, X),
+  member(EtherProtoId, EtherProtoIds),
+  member(EtherVId, EtherVIds).
