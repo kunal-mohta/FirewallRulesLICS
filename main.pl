@@ -1,0 +1,1 @@
+packet(AdapterId, X) :- adapter(AdapterIds, X), member(AdapterId, AdapterIds).
