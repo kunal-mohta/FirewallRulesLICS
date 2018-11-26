@@ -36,14 +36,14 @@ rule('drop adapter A-C').
 
 adapter(IdList, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, ' ', '', [ResponseString|SplitText]),
+  split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
   term_string(ResponseTerm, ResponseString),
   last(Ids, SplitText),
   split_string(Ids, ',', '', IdList).
 
 adapter(IdList, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, ' ', '', [ResponseString|SplitText]),
+  split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
   term_string(ResponseTerm, ResponseString),
   last(Ids, SplitText),
   string_chars(Ids, IdChars),
@@ -52,7 +52,7 @@ adapter(IdList, ResponseTerm) :-
 
 adapter(IdList, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, ' ', '', [ResponseString|SplitText]),
+  split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
   term_string(ResponseTerm, ResponseString),
   last(Ids, SplitText),
   string_chars(Ids, IdChars),
