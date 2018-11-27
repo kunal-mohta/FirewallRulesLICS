@@ -34,9 +34,9 @@
 % packet(ICMPcode, X) :- icmpCode(ICMPcode, X).
 % packet(ICMPtype, ICMPcode, X) :- icmpTypeCode(ICMPtype, ICMPcode, X).
 
-% packet(IPsrcAddr, X) :- ipSrc(IPsrcAddr, X).
+packet(IPsrcAddr, X) :- ipSrc(IPsrcAddr, X).
 % packet(IPdstAddr, X) :- ipDst(IPdstAddr, X).
 % packet(IPAddr, X) :- ipAddr(IPAddr, X).
-packet(ProtoId, X) :- ipProto(ProtoId, X).
-packet(IPsrcAddr, IPdstAddr, X) :- ipSrcDst(IPsrcAddr, IPdstAddr, X).
-packet(IPsrcAddr, IPdstAddr, ProtoId, X) :- ipSrcDstProto(IPsrcAddr, IPdstAddr, ProtoId, X).
+% packet(ProtoId, X) :- ipProto(ProtoId, X).
+% packet(IPsrcAddr, IPdstAddr, X) :- ipSrcDst(IPsrcAddr, IPdstAddr, X).
+% packet(IPsrcAddr, IPdstAddr, ProtoId, X) :- ipSrcDstProto(IPsrcAddr, IPdstAddr, ProtoId, X).

@@ -1,9 +1,10 @@
-rule('accept ip src addr 192.167.10.1').
-rule('reject ip dst addr 192.167.10.33').
-rule('drop ip addr 192.167.10.123').
-rule('accept ip proto 123').
-rule('accept ip src addr 192.167.10.1 dst addr 192.167.10.33').
-rule('accept ip src addr 192.167.10.1 dst addr 192.167.10.33 proto 123').
+% rule('accept ip src addr 192.167.10.1').
+rule('accept ip src addr 192.167.10.1-192.167.10.3').
+% rule('reject ip dst addr 192.167.10.33').
+% rule('drop ip addr 192.167.10.123').
+% rule('accept ip proto 123').
+% rule('accept ip src addr 192.167.10.1 dst addr 192.167.10.33').
+% rule('accept ip src addr 192.167.10.1 dst addr 192.167.10.33 proto 123').
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -71,67 +72,79 @@ convertListToDecimal([Input|InputList], AccList, OutputList) :-
   convertListToDecimal(InputList, [ConvertedInput|AccList], OutputList),
   convertToDecimal(Input, ConvertedInput).
 
+convertIpToDecimal(Input, Output) :-
+  split_string(Input, ".", "", SepInputList),
+  convertListToDecimal(SepInputList, [], SepOutputList),
+  reverse(SepOutputList, RevSepOutputList),
+  atomics_to_string(RevSepOutputList, ".", Output).
+
+convertIpListToDecimal([], OutputList, OutputList).
+convertIpListToDecimal([Input|InputList], AccList, OutputList) :-
+  convertIpListToDecimal(InputList, [ConvertedInput|AccList], OutputList),
+  convertIpToDecimal(Input, ConvertedInput).
+
 %%%%%%%%%%%%%%%%%%%%%%%%
 
-ipSrc(Port, ResponseTerm) :-
+ipSrc(Addr, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", PortPart]),
+  split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", AddrPart]),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(PortPart, Port).
+  ipHandle(AddrPart, Addr).
 
-ipDst(Port, ResponseTerm) :-
+ipDst(Addr, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ip", "dst", "addr", PortPart]),
+  split_string(Rule, " ", "", [ResponseString, "ip", "dst", "addr", AddrPart]),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(PortPart, Port).
+  ipHandle(AddrPart, Addr).
 
-ipAddr(Port, ResponseTerm) :-
+ipAddr(Addr, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ip", "addr", PortPart]),
+  split_string(Rule, " ", "", [ResponseString, "ip", "addr", AddrPart]),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(PortPart, Port).
+  ipHandle(AddrPart, Addr).
 
-ipProto(Port, ResponseTerm) :-
+ipProto(Addr, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ip", "proto", PortPart]),
+  split_string(Rule, " ", "", [ResponseString, "ip", "proto", AddrPart]),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(PortPart, Port).
+  ipHandle(AddrPart, Addr).
 
-ipSrcDst(SrcPort, DstPort, ResponseTerm) :-
+ipSrcDst(SrcAddr, DstAddr, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", SrcPortPart, "dst", "addr", DstPortPart]),
+  split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", SrcAddrPart, "dst", "addr", DstAddrPart]),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(SrcPortPart, SrcPort),
-  ipHandle(DstPortPart, DstPort).
+  ipHandle(SrcAddrPart, SrcAddr),
+  ipHandle(DstAddrPart, DstAddr).
 
-ipSrcDstProto(SrcPort, DstPort, ProtoId, ResponseTerm) :-
+ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", SrcPortPart, "dst", "addr", DstPortPart, "proto", ProtoIdPart]),
+  split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", SrcAddrPart, "dst", "addr", DstAddrPart, "proto", ProtoIdPart]),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(SrcPortPart, SrcPort),
-  ipHandle(DstPortPart, DstPort),
+  ipHandle(SrcAddrPart, SrcAddr),
+  ipHandle(DstAddrPart, DstAddr),
   ipHandle(ProtoIdPart, ProtoId).
 
-ipHandle(PortPart, Port) :-
-  string_chars(PortPart, PortChars),
-  member('-', PortChars),
-  split_string(PortPart, '-', '', [Start, Stop]),
+ipHandle(ParamPart, Param) :-
+  string_chars(ParamPart, ParamChars),
+  member('-', ParamChars),
+  split_string(ParamPart, '-', '', [Start, Stop]),
   convertToDecimal(Start, DecimalStart),
   convertToDecimal(Stop, DecimalStop),
   number_string(RangeStart, DecimalStart),
   number_string(RangeStop, DecimalStop),
-  convertToDecimal(Port, ConvertedPort),
-  number_string(ConvertedPortNumber, ConvertedPort),
-  ConvertedPortNumber >= RangeStart,
-  ConvertedPortNumber =< RangeStop.
+  convertToDecimal(Param, ConvertedParam),
+  number_string(ConvertedParamNumber, ConvertedParam),
+  ConvertedParamNumber >= RangeStart,
+  ConvertedParamNumber =< RangeStop.
 
-ipHandle(PortPart, Port) :-
-  string_chars(PortPart, PortChars),
-  member(',', PortChars),
-  split_string(PortPart, ',', '', PortList),
-  convertListToDecimal(PortList, [], ConvertedPortList),
-  convertToDecimal(Port, ConvertedPort),
-  member(ConvertedPort, ConvertedPortList).
+ipHandle(ParamPart, Param) :-
+  string_chars(ParamPart, ParamChars),
+  member(',', ParamChars),
+  split_string(ParamPart, ',', '', ParamList),
+  convertIpListToDecimal(ParamList, [], ConvertedParamList),
+  convertIpToDecimal(Param, ConvertedParam),
+  member(ConvertedParam, ConvertedParamList).
 
-ipHandle(PortPart, ConvertedPortPart) :-
-  convertToDecimal(PortPart, ConvertedPortPart).
+ipHandle(ParamPart, Param) :-
+  convertIpToDecimal(ParamPart, X),
+  convertIpToDecimal(Param, X).

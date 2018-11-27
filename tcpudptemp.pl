@@ -8,9 +8,9 @@
 % rule('accept tcp src port 222 dst port 123-321').
 % rule('reject tcp src port 1-10 dst port 101,103').
 
-% rule('drop tcp src port 0100').
+rule('drop tcp src port 0100').
 % rule('accept tcp src port 0x123,0x321').
-rule('reject tcp src port 0123-0321').
+% rule('reject tcp src port 0123-0321').
 % rule('reject udp src port 101,103').
 % rule('drop udp dst port 100').
 % rule('accept udp dst port 123-321').
