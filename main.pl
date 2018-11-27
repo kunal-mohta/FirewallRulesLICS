@@ -22,6 +22,6 @@
 % packet(TCPdstport, X) :- tcpDst(TCPdstport, X).
 % packet(TCPsrcport, TCPdstport, X) :- tcpSrcDst(TCPsrcport, TCPdstport, X).
 
-packet(UDPsrcport, X) :- udpSrc(UDPsrcport, X).
-packet(UDPdstport, X) :- udpDst(UDPdstport, X).
-packet(UDPsrcport, UDPdstport, X) :- udpSrcDst(UDPsrcport, UDPdstport, X).
+% packet(UDPsrcport, X) :- udpSrc(UDPsrcport, X).
+% packet(UDPdstport, X) :- udpDst(UDPdstport, X).
+% packet(UDPsrcport, UDPdstport, X) :- udpSrcDst(UDPsrcport, UDPdstport, X).
