@@ -18,9 +18,9 @@
 %   member(EtherProtoId, EtherProtoIds),
 %   member(EtherVId, EtherVIds).
 
-packet(ProtoId, X) :- etherProto(ProtoId, X).
-packet(VId, X) :- etherVlan(VId, X).
-packet(ProtoId, VId, X) :- etherProtoVlan(ProtoId, VId, X).
+% packet(ProtoId, X) :- etherProto(ProtoId, X).
+% packet(VId, X) :- etherVlan(VId, X).
+% packet(ProtoId, VId, X) :- etherProtoVlan(ProtoId, VId, X).
 
 % packet(TCPsrcport, X) :- tcpSrc(TCPsrcport, X).
 % packet(TCPdstport, X) :- tcpDst(TCPdstport, X).
@@ -33,3 +33,10 @@ packet(ProtoId, VId, X) :- etherProtoVlan(ProtoId, VId, X).
 % packet(ICMPtype, X) :- icmpType(ICMPtype, X).
 % packet(ICMPcode, X) :- icmpCode(ICMPcode, X).
 % packet(ICMPtype, ICMPcode, X) :- icmpTypeCode(ICMPtype, ICMPcode, X).
+
+% packet(IPsrcAddr, X) :- ipSrc(IPsrcAddr, X).
+% packet(IPdstAddr, X) :- ipDst(IPdstAddr, X).
+% packet(IPAddr, X) :- ipAddr(IPAddr, X).
+packet(ProtoId, X) :- ipProto(ProtoId, X).
+packet(IPsrcAddr, IPdstAddr, X) :- ipSrcDst(IPsrcAddr, IPdstAddr, X).
+packet(IPsrcAddr, IPdstAddr, ProtoId, X) :- ipSrcDstProto(IPsrcAddr, IPdstAddr, ProtoId, X).
