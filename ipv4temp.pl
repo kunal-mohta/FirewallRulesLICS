@@ -83,6 +83,20 @@ convertIpListToDecimal([Input|InputList], AccList, OutputList) :-
   convertIpListToDecimal(InputList, [ConvertedInput|AccList], OutputList),
   convertIpToDecimal(Input, ConvertedInput).
 
+% ip in range
+ipInRange(IP, Start, Stop) :-
+  split_string(IP, ".", "", SepIP),
+  atomics_to_string(SepIP, "", StringIP),
+  split_string(Start, ".", "", SepStart),
+  atomics_to_string(SepStart, "", StringStart),
+  split_string(Stop, ".", "", SepStop),
+  atomics_to_string(SepStop, "", StringStop),
+  number_string(NumIP, StringIP),
+  number_string(NumStart, StringStart),
+  number_string(NumStop, StringStop),
+  NumIP >= NumStart,
+  NumIP =< NumStop.
+
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 ipSrc(Addr, ResponseTerm) :-
@@ -128,14 +142,15 @@ ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', [Start, Stop]),
-  convertToDecimal(Start, DecimalStart),
-  convertToDecimal(Stop, DecimalStop),
-  number_string(RangeStart, DecimalStart),
-  number_string(RangeStop, DecimalStop),
-  convertToDecimal(Param, ConvertedParam),
-  number_string(ConvertedParamNumber, ConvertedParam),
-  ConvertedParamNumber >= RangeStart,
-  ConvertedParamNumber =< RangeStop.
+  convertIpToDecimal(Start, DecimalStart),
+  convertIpToDecimal(Stop, DecimalStop),
+  % number_string(RangeStart, DecimalStart),
+  % number_string(RangeStop, DecimalStop),
+  convertIpToDecimal(Param, ConvertedParam),
+  % number_string(ConvertedParamNumber, ConvertedParam),
+  % ConvertedParamNumber >= RangeStart,
+  % ConvertedParamNumber =< RangeStop.
+  ipInRange(ConvertedParam, Start, Stop).
 
 ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
