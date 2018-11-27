@@ -18,9 +18,9 @@
 %   member(EtherProtoId, EtherProtoIds),
 %   member(EtherVId, EtherVIds).
 
-% packet(TCPsrcport, X) :- tcpSrc(TCPsrcport, X).
-% packet(TCPdstport, X) :- tcpDst(TCPdstport, X).
-% packet(TCPsrcport, TCPdstport, X) :- tcpSrcDst(TCPsrcport, TCPdstport, X).
+packet(TCPsrcport, X) :- tcpSrc(TCPsrcport, X).
+packet(TCPdstport, X) :- tcpDst(TCPdstport, X).
+packet(TCPsrcport, TCPdstport, X) :- tcpSrcDst(TCPsrcport, TCPdstport, X).
 
 % packet(UDPsrcport, X) :- udpSrc(UDPsrcport, X).
 % packet(UDPdstport, X) :- udpDst(UDPdstport, X).
