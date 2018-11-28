@@ -219,7 +219,7 @@ tcpDst(Port, ResponseTerm) :-
 
 tcpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "tcp", "src", "port", SrcPortPart, "dst", "port", DstPortPart]),
+  split_string(Rule, " ", "", [ResponseString, "tcp", "dst", "port", DstPortPart, "src", "port", SrcPortPart]),
   term_string(ResponseTerm, ResponseString),
   tcpHandle(SrcPortPart, SrcPort),
   tcpHandle(DstPortPart, DstPort).
@@ -263,7 +263,7 @@ udpDst(Port, ResponseTerm) :-
 
 udpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "udp", "src", "port", SrcPortPart, "dst", "port", DstPortPart]),
+  split_string(Rule, " ", "", [ResponseString, "udp", "dst", "port", DstPortPart, "src", "port", SrcPortPart]),
   term_string(ResponseTerm, ResponseString),
   udpHandle(SrcPortPart, SrcPort),
   udpHandle(DstPortPart, DstPort).

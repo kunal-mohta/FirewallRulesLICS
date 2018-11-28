@@ -1,0 +1,90 @@
+### Adapter Clause
+**Syntax for rule**:- adapter `<adapter-id>`
+
+**Possible Adapter ID values**:-
+  - Alphabets A through H (must be in uppercase)
+  - Keyword *`any`* (must be lowercase)
+
+**Examples**:-
+  - adapter any
+  - adapter A
+  - adapter A,B
+  - adapter A-D
+
+
+### Ethernet Clause
+**Syntax for rule**:-
+  - ether proto `<protocol-id>`
+  - ether vid `<vlan-number>`
+  - ether vid `<vlan-number>` proto `<protocol-id>`
+
+**Possible Protocol ID values**:-
+  - Number between 0 & 65535 (allowed in decimal, octal, hexadecimal)
+
+**Possible VLAN Number values**:-
+  - Number between 0 & 4095 (allowed in decimal, octal, hexadecimal)
+
+**Examples**:-
+  - ether proto 0x0800
+  - ether proto 0x0800-0x0802
+  - ether vid 1
+  - ether vid 3-999 proto 0x0800
+
+
+### IPv4 Datagram Clause
+**Syntax for rule**:-
+  - ip src addr `<ipv4-addr>`
+  - ip dst addr `<ipv4-addr>`
+  - ip addr `<ipv4-addr>`
+  - ip src addr `<ipv4-addr>` dst addr `<ipv4-addr>`
+  - ip proto `<protocol-type>`
+  - ip src addr `<ipv4-addr>` dst addr `<ipv4-addr>` proto `<protocol-type>`
+
+**Possible IPv4 addr values**:-
+  - Values of the form `n.n.n.n`
+  - Values of the form `n.n.n.n/netmask`\
+  where `n` is a number between 0 & 255 (allowed in decimal, octal, hexadecimal)\
+  and `netmask` is a number between 1 & 32 (allowed in decimal, octal, hexadecimal)
+
+**Possible Protocal type values**:-
+  - Number between 0 & 255 (allowed in decimal, octal, hexadecimal)
+
+**Examples**:-
+  - ip src addr 192.168.10.1/24
+  - ip dst addr 192.168.10.1-192.168.10.10
+  - ip addr 192.168.10.1,192.168.10.2
+  - ip proto 123
+  - ip src addr 192.168.10.1 dst addr 192.168.10.20 proto 3-220
+
+
+### TCP & UDP conditions
+**Syntax for rule**:-
+  - tcp src port `<tcp-udp-port>`
+  - tcp dst port `<tcp-udp-port>`
+  - tcp dst port `<tcp-udp-port>` src port `<tcp-udp-port>`
+  - udp src port `<tcp-udp-port>`
+  - udp dst port `<tcp-udp-port>`
+  - udp dst port `<tcp-udp-port>` src port `<tcp-udp-port>`
+
+**Possible TCP-UDP Port values**:-
+  - Number between 0 & 65535 (allowed in decimal, octal, hexadecimal)
+
+**Examples**:-
+  - tcp src port 0xFFFF
+  - tcp dst port 0,1,2 src port 0xFFFF
+  - udp dst port 0xFFFF src port 0-2
+
+
+### ICMP conditions
+**Syntax for rule**:-
+  - icmp type `<protocol-type>`
+  - icmp code `<message-code>`
+  - icmp type `<protocol-type>` code `<message-code>`
+
+**Possible Protocol type & Message code values**:-
+  - Number between 0 & 255 (allowed in decimal, octal, hexadecimal)
+
+**Examples**:-
+  - icmp type 200
+  - icmp code 192,199
+  - icmp type 3-222 code 100

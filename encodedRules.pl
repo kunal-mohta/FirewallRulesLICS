@@ -2,7 +2,7 @@
 rule('accept adapter any').
 rule('accept adapter F-H').
 rule('reject adapter E').
-rule('drop adapter A-C').
+rule('drop adapter C-A').
 
 % ----------------- EtherNet Clause Rules ----------------- %
 rule('drop ether vid 0x0801 proto 0x0800,0x0802').
