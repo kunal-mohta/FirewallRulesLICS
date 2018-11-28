@@ -144,12 +144,7 @@ ipHandle(ParamPart, Param) :-
   split_string(ParamPart, '-', '', [Start, Stop]),
   convertIpToDecimal(Start, DecimalStart),
   convertIpToDecimal(Stop, DecimalStop),
-  % number_string(RangeStart, DecimalStart),
-  % number_string(RangeStop, DecimalStop),
   convertIpToDecimal(Param, ConvertedParam),
-  % number_string(ConvertedParamNumber, ConvertedParam),
-  % ConvertedParamNumber >= RangeStart,
-  % ConvertedParamNumber =< RangeStop.
   ipInRange(ConvertedParam, Start, Stop).
 
 ipHandle(ParamPart, Param) :-

@@ -1,42 +1,80 @@
-% packet(AdapterId, EtherProtoId, EtherVId, X) :-
-%   adapter(AdapterIds, X),
-%   member(AdapterId, AdapterIds),
-%   etherProto(X).
+packet(AdapterId, EtherProtoId, EtherVId, TCPsrcport, TCPdstport, UDPsrcport, UDPdstport, ICMPtype, ICMPcode, IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X) :-
+  adapter(AdapterIds, X),
+  ethernet(EtherProtoId, EtherVId, X),
+  tcp(TCPsrcport, TCPdstport, X),
+  udp(UDPsrcport, UDPdstport, X),
+  icmp(ICMPtype, ICMPcode, X),
+  ip(IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X),
+  member(AdapterId, AdapterIds).
 
-% packet(EtherProtoId, X) :-
-%   etherNet(EtherProtoIds, X),
-%   member(EtherProtoId, EtherProtoIds).
+ethernet(EtherProtoId, "", X) :-
+  etherProto(EtherProtoId, X),
+  !.
 
-% packet(EtherProtoId, X) :-
-%   etherNet(EtherProtoRangeStart, EtherProtoRangeStop, X),
-%   number_string(NumProtoId, EtherProtoId),
-%   NumProtoId >= EtherProtoRangeStart,
-%   NumProtoId =< EtherProtoRangeStop.
+ethernet("", EtherVId, X) :-
+  etherVlan(EtherVId, X),
+  !.
 
-% packet(EtherProtoId, EtherVId, X) :-
-%   etherNet(EtherProtoIds, EtherVIds, X),
-%   member(EtherProtoId, EtherProtoIds),
-%   member(EtherVId, EtherVIds).
+ethernet(EtherProtoId, EtherVId, X) :-
+  etherProtoVlan(EtherProtoId, EtherVId, X),
+  !.
 
-% packet(ProtoId, X) :- etherProto(ProtoId, X).
-% packet(VId, X) :- etherVlan(VId, X).
-% packet(ProtoId, VId, X) :- etherProtoVlan(ProtoId, VId, X).
+tcp(TCPsrcport, "", X) :-
+  tcpSrc(TCPsrcport, X),
+  !.
 
-% packet(TCPsrcport, X) :- tcpSrc(TCPsrcport, X).
-% packet(TCPdstport, X) :- tcpDst(TCPdstport, X).
-% packet(TCPsrcport, TCPdstport, X) :- tcpSrcDst(TCPsrcport, TCPdstport, X).
+tcp("", TCPdstport, X) :-
+  tcpDst(TCPdstport, X),
+  !.
 
-% packet(UDPsrcport, X) :- udpSrc(UDPsrcport, X).
-% packet(UDPdstport, X) :- udpDst(UDPdstport, X).
-% packet(UDPsrcport, UDPdstport, X) :- udpSrcDst(UDPsrcport, UDPdstport, X).
+tcp(TCPsrcport, TCPdstport, X) :-
+  tcpSrcDst(TCPsrcport, TCPdstport, X),
+  !.
 
-% packet(ICMPtype, X) :- icmpType(ICMPtype, X).
-% packet(ICMPcode, X) :- icmpCode(ICMPcode, X).
-% packet(ICMPtype, ICMPcode, X) :- icmpTypeCode(ICMPtype, ICMPcode, X).
+udp(UDPsrcport, "", X) :-
+  udpSrc(UDPsrcport, X),
+  !.
 
-packet(IPsrcAddr, X) :- ipSrc(IPsrcAddr, X).
-% packet(IPdstAddr, X) :- ipDst(IPdstAddr, X).
-% packet(IPAddr, X) :- ipAddr(IPAddr, X).
-% packet(ProtoId, X) :- ipProto(ProtoId, X).
-% packet(IPsrcAddr, IPdstAddr, X) :- ipSrcDst(IPsrcAddr, IPdstAddr, X).
-% packet(IPsrcAddr, IPdstAddr, ProtoId, X) :- ipSrcDstProto(IPsrcAddr, IPdstAddr, ProtoId, X).
+udp("", UDPdstport, X) :-
+  udpDst(UDPdstport, X),
+  !.
+
+udp(UDPsrcport, UDPdstport, X) :-
+  udpSrcDst(UDPsrcport, UDPdstport, X),
+  !.
+
+icmp(ICMPtype, "", X) :-
+  icmpType(ICMPtype, X),
+  !.
+
+icmp("", ICMPcode, X) :-
+  icmpCode(ICMPcode, X),
+  !.
+
+icmp(ICMPtype, ICMPcode, X) :-
+  icmpTypeCode(ICMPtype, ICMPcode, X),
+  !.
+
+ip(IPsrcAddr, "", "", "", X) :-
+  ipSrc(IPsrcAddr, X),
+  !.
+
+ip("", IPdstAddr, "", "", X) :-
+  ipDst(IPdstAddr, X),
+  !.
+
+ip("", "", IPAddr, "", X) :-
+  ipAddr(IPAddr, X),
+  !.
+
+ip(IPsrcAddr, IPdstAddr, "", "", X) :-
+  ipSrcDst(IPsrcAddr, IPdstAddr, X),
+  !.
+
+ip("", "", "", IPProtoId, X) :-
+  ipProto(IPProtoId, X),
+  !.
+
+ip(IPsrcAddr, IPdstAddr, "", IPProtoId, X) :-
+  ipSrcDstProto(IPsrcAddr, IPdstAddr, IPProtoId, X),
+  !.
