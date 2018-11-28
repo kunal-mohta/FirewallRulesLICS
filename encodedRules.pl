@@ -6,9 +6,11 @@ rule('drop adapter A-C').
 
 % ----------------- EtherNet Clause Rules ----------------- %
 rule('drop ether vid 0x0801 proto 0x0800,0x0802').
+rule('drop ether vid 0x0801 proto ipx').
 rule('reject ether proto 0x0800,0x0802').
 rule('reject ether vid 0x0803-0x0807').
 rule('accept ether proto 0x0808').
+rule('accept ether proto arp').
 
 % ----------------- TCP-UDP Condition Rules ----------------- %
 rule('drop tcp src port 100').

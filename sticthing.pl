@@ -150,6 +150,7 @@ adapter(IdList, ResponseTerm) :-
 
 
 % ----------------- ETHERNET CLAUSE ----------------- %
+aliasList(["arp", "aarp", "atalk", "ipx", "mlps", "netbui", "pppoe", "rarp", "sna", "xns"]).
 
 % ----------------- Parsing Rules ----------------- %
 
@@ -157,22 +158,22 @@ etherProto(ProtoId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId).
+  etherHandle(ProtoIdPart, ProtoId, 1).
 
 etherVlan(VId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart]),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(VIdPart, VId).
+  etherHandle(VIdPart, VId, 0).
 
 etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart, "proto", ProtoIdPart]),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId),
-  etherHandle(VIdPart, VId).
+  etherHandle(ProtoIdPart, ProtoId, 1),
+  etherHandle(VIdPart, VId, 0).
 
-etherHandle(ParamPart, Param) :-
+etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', [Start, Stop]),
@@ -185,7 +186,7 @@ etherHandle(ParamPart, Param) :-
   ConvertedParamNumber >= RangeStart,
   ConvertedParamNumber =< RangeStop.
 
-etherHandle(ParamPart, Param) :-
+etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
   split_string(ParamPart, ',', '', ParamList),
@@ -193,9 +194,12 @@ etherHandle(ParamPart, Param) :-
   convertToDecimal(Param, ConvertedParam),
   member(ConvertedParam, ConvertedParamList).
 
-etherHandle(ParamPart, ConvertedParamPart) :-
+etherHandle(ParamPart, ConvertedParamPart, _) :-
   convertToDecimal(ParamPart, ConvertedParamPart).
 
+etherHandle(ProtoAlias, _, 1) :-
+  aliasList(AliasList),
+  member(ProtoAlias, AliasList).
 
 % ----------------- TCP & UDP CONDITIONS ----------------- %
 
