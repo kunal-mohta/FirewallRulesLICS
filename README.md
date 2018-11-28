@@ -12,8 +12,8 @@ Problem statement for this can be found in the `ProblemStatement` folder.
 
 Instructions to use the program can be found in `Instructions` folder (both markdown and pdf file available).
 
-Format to write down Firewall rules is given in `Rules` folder (both markdown and pdf file available).
+Format to write down Firewall rules is given in `RulesInstruction` folder (both markdown and pdf file available).
 
-Format to give the input package is given in `Packages` folder (both markdown and pdf file available).
+Format to give the input package is given in `InputFormat` folder (both markdown and pdf file available).
 
 Sample rules and package inputs are available in `Sample` folder.
