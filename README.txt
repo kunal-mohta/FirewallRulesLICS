@@ -114,7 +114,7 @@ These rules might collide with each other's result. In such situations, the foll
     (ii) If the colliding rules are of different Clauses/Conditions, then priority will be decided based on the output actions of the rules.
     The priority order in this case is - Reject > Drop > Accept.
 
-- The 'any' keyword will be applied to any value of the parameter, i.e. even if the parameter is left empty (empty string ""), then too the rule will apply to it.
+- The 'any' keyword will be applied to any value of the parameter, except when the parameter is left empty (empty string ""), i.e. some value for the parameter is needed for the rule with 'any' to apply.
 
 - Default action is taken as 'accept'. This is for the situations when :-
     (i) No rule matches the clause/condition in the packet.

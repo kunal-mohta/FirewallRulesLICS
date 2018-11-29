@@ -187,7 +187,8 @@ adapterHandle(ParamPart, Param) :-
   member(Param, ParamList).
 
 % any
-adapterHandle("any", _).
+adapterHandle("any", Param) :-
+  not(Param = "").
 
 % ----------------- ETHERNET CLAUSE ----------------- %
 aliasList(["arp", "aarp", "atalk", "ipx", "mlps", "netbui", "pppoe", "rarp", "sna", "xns"]).
@@ -292,7 +293,8 @@ etherHandle(ParamPart, ConvertedParamPart, _) :-
   convertToDecimal(ParamPart, ConvertedParamPart).
 
 % any
-etherHandle("any", _, 1).
+etherHandle("any", Param, 1) :-
+  not(Param = "").
 
 etherHandle(ProtoAlias, _, 1) :-
   aliasList(AliasList),
@@ -370,7 +372,8 @@ tcpHandle(PortPart, ConvertedPortPart) :-
   convertToDecimal(PortPart, ConvertedPortPart).
 
 % any
-tcpHandle("any", _).
+tcpHandle("any", Param) :-
+  not(Param = "").
 
 udpSrc(Port, ResponseTerm) :-
   rule(Rule),
@@ -436,7 +439,8 @@ udpHandle(PortPart, ConvertedPortPart) :-
   convertToDecimal(PortPart, ConvertedPortPart).
 
 % any
-udpHandle("any", _).
+udpHandle("any", Param) :-
+  not(Param = "").
 
 % ----------------- ICMP CLAUSE ----------------- %
 
@@ -511,7 +515,8 @@ icmpHandle(ParamPart, ConvertedParamPart) :-
   convertToDecimal(ParamPart, ConvertedParamPart).
 
 % any
-icmpHandle("any", _).
+icmpHandle("any", Param) :-
+  not(Param = "").
 
 % ----------------- IPv4 CLAUSE ----------------- %
 
@@ -621,4 +626,5 @@ ipHandle(ParamPart, Param) :-
   convertIpToDecimal(Param, X).
 
 % any
-ipHandle("any", _).
+ipHandle("any", Param) :-
+  not(Param = "").

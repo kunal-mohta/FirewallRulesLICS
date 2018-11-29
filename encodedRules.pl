@@ -1,5 +1,5 @@
 % ----------------- Adapter Clause Rules ----------------- %
-% rule('accept adapter any').
+rule('reject adapter any').
 % rule('accept adapter F-H').
 % rule('reject adapter any').
 % rule('drop adapter A-C').
@@ -14,7 +14,7 @@
 % rule('drop ether vid any').
 % rule('reject ether proto any').
 % rule('reject ether vid any proto any').
-rule('reject ether vid !(1-10)').
+% rule('reject ether vid !(1-10)').
 % rule('accept ether proto 123').
 
 % ----------------- TCP-UDP Condition Rules ----------------- %
