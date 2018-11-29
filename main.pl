@@ -8,6 +8,7 @@ packet(AdapterId, EtherVId, EtherProtoId, TCPdstport, TCPsrcport, UDPdstport, UD
   Actions = [A, B, C, D, E, F],
   finalAction(Actions, X).
 
+% for colliding rules of different clause/condition
 finalAction(Actions, X) :-
   member(reject, Actions),
   X = reject,
@@ -23,6 +24,7 @@ finalAction(Actions, X) :-
   X = accept,
   !.
 
+% middleware predicates
 ethernet(EtherProtoId, "", X) :-
   etherProto(EtherProtoId, X),
   !.
@@ -104,8 +106,5 @@ ip("", "", "", IPProtoId, X) :-
   !.
 
 ip(IPsrcAddr, IPdstAddr, "", IPProtoId, X) :-
-  % not(ICMPcode = ""),
-  % not(ICMPcode = ""),
-  % not(ICMPcode = ""),
   ipSrcDstProto(IPsrcAddr, IPdstAddr, IPProtoId, X),
   !.

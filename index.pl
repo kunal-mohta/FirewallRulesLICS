@@ -165,6 +165,15 @@ adapter(Id, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 adapter(_, accept).
 
+% not expression
+adapterHandle(ParamPart, Param) :-
+  string_chars(ParamPart, ParamChars),
+  member('!', ParamChars),
+  member('(', ParamChars),
+  member(')', ParamChars),
+  split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  not(adapterHandle(MainParamPart, Param)).
+
 % normal
 adapterHandle(ParamPart, Param) :-
   split_string(ParamPart, ',', '', ParamPartList),
@@ -260,6 +269,7 @@ etherProtoVlan(ProtoId, VId, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 etherProtoVlan(_, _, accept).
 
+% not expression
 etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
   member('!', ParamChars),
@@ -268,6 +278,7 @@ etherHandle(ParamPart, Param, _) :-
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
   not(etherHandle(MainParamPart, Param, _)).
 
+% range
 etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
@@ -281,6 +292,7 @@ etherHandle(ParamPart, Param, _) :-
   ConvertedParamNumber >= RangeStart,
   ConvertedParamNumber =< RangeStop.
 
+% comma-separated
 etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
@@ -289,6 +301,7 @@ etherHandle(ParamPart, Param, _) :-
   convertToDecimal(Param, ConvertedParam),
   member(ConvertedParam, ConvertedParamList).
 
+% normal
 etherHandle(ParamPart, ConvertedParamPart, _) :-
   convertToDecimal(ParamPart, ConvertedParamPart).
 
@@ -296,6 +309,7 @@ etherHandle(ParamPart, ConvertedParamPart, _) :-
 etherHandle("any", Param, 1) :-
   not(Param = "").
 
+% aliases
 etherHandle(ProtoAlias, _, 1) :-
   aliasList(AliasList),
   member(ProtoAlias, AliasList).
@@ -336,6 +350,7 @@ tcpSrcDst(SrcPort, DstPort, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 tcpSrcDst(_, _, accept).
 
+% not expression
 tcpHandle(PortPart, Port) :-
   string_chars(PortPart, PortChars),
   member('!', PortChars),
@@ -344,6 +359,7 @@ tcpHandle(PortPart, Port) :-
   split_string(PortPart, "!()", "", [_, _, MainPortPart, _]),
   not(tcpHandle(MainPortPart, Port)).
 
+% range
 tcpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
   string_chars(PortPart, PortChars),
@@ -358,6 +374,7 @@ tcpHandle(PortPart, Port) :-
   ConvertedPortNumber >= RangeStart,
   ConvertedPortNumber =< RangeStop.
 
+% comma-separated
 tcpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
   string_chars(PortPart, PortChars),
@@ -367,6 +384,7 @@ tcpHandle(PortPart, Port) :-
   convertToDecimal(Port, ConvertedPort),
   member(ConvertedPort, ConvertedPortList).
 
+% normal
 tcpHandle(PortPart, ConvertedPortPart) :-
   checkRangeTcpUdpPort(PortPart),
   convertToDecimal(PortPart, ConvertedPortPart).
@@ -403,6 +421,7 @@ udpSrcDst(SrcPort, DstPort, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 udpSrcDst(_, _, accept).
 
+% not expression
 udpHandle(PortPart, Port) :-
   string_chars(PortPart, PortChars),
   member('!', PortChars),
@@ -411,6 +430,7 @@ udpHandle(PortPart, Port) :-
   split_string(PortPart, "!()", "", [_, _, MainPortPart, _]),
   not(udpHandle(MainPortPart, Port)).
 
+% range
 udpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
   string_chars(PortPart, PortChars),
@@ -425,6 +445,7 @@ udpHandle(PortPart, Port) :-
   ConvertedPortNumber >= RangeStart,
   ConvertedPortNumber =< RangeStop.
 
+% comma-separated
 udpHandle(PortPart, Port) :-
   string_chars(PortPart, PortChars),
   checkRangeTcpUdpPort(PortPart),
@@ -434,6 +455,7 @@ udpHandle(PortPart, Port) :-
   convertToDecimal(Port, ConvertedPort),
   member(ConvertedPort, ConvertedPortList).
 
+% normal
 udpHandle(PortPart, ConvertedPortPart) :-
   checkRangeTcpUdpPort(PortPart),
   convertToDecimal(PortPart, ConvertedPortPart).
@@ -479,6 +501,7 @@ icmpTypeCode(Type, Code, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 icmpTypeCode(_, _, accept).
 
+% not expression
 icmpHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
   member('!', ParamChars),
@@ -487,6 +510,7 @@ icmpHandle(ParamPart, Param) :-
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
   not(icmpHandle(MainParamPart, Param)).
 
+% range
 icmpHandle(ParamPart, Param) :-
   checkRangeTypeCode(ParamPart),
   string_chars(ParamPart, ParamChars),
@@ -501,6 +525,7 @@ icmpHandle(ParamPart, Param) :-
   ConvertedParamNumber >= RangeStart,
   ConvertedParamNumber =< RangeStop.
 
+% comma-separated
 icmpHandle(ParamPart, Param) :-
   checkRangeTypeCode(ParamPart),
   string_chars(ParamPart, ParamChars),
@@ -510,6 +535,7 @@ icmpHandle(ParamPart, Param) :-
   convertToDecimal(Param, ConvertedParam),
   member(ConvertedParam, ConvertedParamList).
 
+% normal
 icmpHandle(ParamPart, ConvertedParamPart) :-
   checkRangeTypeCode(ParamPart),
   convertToDecimal(ParamPart, ConvertedParamPart).
@@ -596,6 +622,7 @@ ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 ipSrcDstProto(_, _, _, accept).
 
+% not expression
 ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
   member('!', ParamChars),
@@ -604,6 +631,7 @@ ipHandle(ParamPart, Param) :-
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
   not(ipHandle(MainParamPart, Param)).
 
+% range
 ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
@@ -613,6 +641,7 @@ ipHandle(ParamPart, Param) :-
   convertIpToDecimal(Param, ConvertedParam),
   ipInRange(ConvertedParam, DecimalStart, DecimalStop).
 
+% comma-separated
 ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
@@ -621,6 +650,7 @@ ipHandle(ParamPart, Param) :-
   convertIpToDecimal(Param, ConvertedParam),
   member(ConvertedParam, ConvertedParamList).
 
+% normal
 ipHandle(ParamPart, Param) :-
   convertIpToDecimal(ParamPart, X),
   convertIpToDecimal(Param, X).
@@ -628,3 +658,6 @@ ipHandle(ParamPart, Param) :-
 % any
 ipHandle("any", Param) :-
   not(Param = "").
+
+
+% ----------------- END ----------------- %
