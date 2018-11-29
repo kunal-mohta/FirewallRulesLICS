@@ -154,36 +154,39 @@ mainStr(["A", "B", "C", "D", "E", "F", "G", "H"]).
 
 % ----------------- Parsing Rules ----------------- %
 
-% normal
-adapter(IdList, ResponseTerm) :-
+adapter(Id, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
   term_string(ResponseTerm, ResponseString),
   last(Ids, SplitText),
-  split_string(Ids, ',', '', IdList).
+  adapterHandle(Ids, Id).
+
+% wrong rule / wrong package / no rule matched
+adapter(_, _).
+
+% normal
+adapterHandle(ParamPart, Param) :-
+  split_string(ParamPart, ',', '', ParamPartList),
+  member(Param, ParamPartList).
 
 % comma separated
-adapter(IdList, ResponseTerm) :-
-  rule(Rule),
-  split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
-  term_string(ResponseTerm, ResponseString),
-  last(Ids, SplitText),
-  string_chars(Ids, IdChars),
-  member(',', IdChars),
-  split_string(Ids, ',', '', IdList).
+adapterHandle(ParamPart, Param) :-
+  string_chars(ParamPart, ParamChars),
+  member(',', ParamChars),
+  split_string(ParamPart, ',', '', ParamList),
+  member(Param, ParamList).
 
 % range type
-adapter(IdList, ResponseTerm) :-
-  rule(Rule),
-  split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
-  term_string(ResponseTerm, ResponseString),
-  last(Ids, SplitText),
-  string_chars(Ids, IdChars),
-  member('-', IdChars),
-  split_string(Ids, '-', '', IdEnds),
+adapterHandle(ParamPart, Param) :-
+  string_chars(ParamPart, ParamChars),
+  member('-', ParamChars),
+  split_string(ParamPart, '-', '', ParamEnds),
   mainStr(MainStr),
-  getSubList(MainStr, IdEnds, IdList, [], 0).
+  getSubList(MainStr, ParamEnds, ParamList, [], 0),
+  member(Param, ParamList).
 
+% any
+adapterHandle("any", _).
 
 % ----------------- ETHERNET CLAUSE ----------------- %
 aliasList(["arp", "aarp", "atalk", "ipx", "mlps", "netbui", "pppoe", "rarp", "sna", "xns"]).
@@ -203,7 +206,16 @@ etherProto(ProtoId, ResponseTerm) :-
   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
   checkRangeEtherProto(ProtoIdPart),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId, 1).
+  etherHandle(ProtoIdPart, ProtoId, 0).
+
+etherProto(ProtoId, ResponseTerm) :-
+  rule(Rule),
+  split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
+  term_string(ResponseTerm, ResponseString),
+  etherHandle(ProtoId, ProtoIdPart, 1).
+
+% wrong rule / wrong package / no rule matched
+etherProto(_, _).
 
 etherVlan(VId, ResponseTerm) :-
   rule(Rule),
@@ -211,6 +223,9 @@ etherVlan(VId, ResponseTerm) :-
   checkRangeEtherVlan(VIdPart),
   term_string(ResponseTerm, ResponseString),
   etherHandle(VIdPart, VId, 0).
+
+% wrong rule / wrong package / no rule matched
+etherVlan(_, _).
 
 etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   rule(Rule),
@@ -220,6 +235,9 @@ etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   term_string(ResponseTerm, ResponseString),
   etherHandle(ProtoIdPart, ProtoId, 1),
   etherHandle(VIdPart, VId, 0).
+
+% wrong rule / wrong package / no rule matched
+etherProtoVlan(_, _, _).
 
 etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
@@ -245,6 +263,9 @@ etherHandle(ParamPart, Param, _) :-
 etherHandle(ParamPart, ConvertedParamPart, _) :-
   convertToDecimal(ParamPart, ConvertedParamPart).
 
+% any
+etherHandle(_, "any", _).
+
 etherHandle(ProtoAlias, _, 1) :-
   aliasList(AliasList),
   member(ProtoAlias, AliasList).
@@ -260,27 +281,33 @@ checkRangeTcpUdpPort(Param) :-
 tcpSrc(Port, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "tcp", "src", "port", PortPart]),
-  checkRangeTcpUdpPort(PortPart),
   term_string(ResponseTerm, ResponseString),
   tcpHandle(PortPart, Port).
+
+% wrong rule / wrong package / no rule matched
+tcpSrc(_, _).
 
 tcpDst(Port, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "tcp", "dst", "port", PortPart]),
-  checkRangeTcpUdpPort(PortPart),
   term_string(ResponseTerm, ResponseString),
   tcpHandle(PortPart, Port).
+
+% wrong rule / wrong package / no rule matched
+tcpDst(_, _).
 
 tcpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "tcp", "dst", "port", DstPortPart, "src", "port", SrcPortPart]),
-  checkRangeTcpUdpPort(DstPortPart),
-  checkRangeTcpUdpPort(SrcPortPart),
   term_string(ResponseTerm, ResponseString),
   tcpHandle(SrcPortPart, SrcPort),
   tcpHandle(DstPortPart, DstPort).
 
+% wrong rule / wrong package / no rule matched
+tcpSrcDst(_, _, _).
+
 tcpHandle(PortPart, Port) :-
+  checkRangeTcpUdpPort(PortPart),
   string_chars(PortPart, PortChars),
   member('-', PortChars),
   split_string(PortPart, '-', '', [Start, Stop]),
@@ -294,6 +321,7 @@ tcpHandle(PortPart, Port) :-
   ConvertedPortNumber =< RangeStop.
 
 tcpHandle(PortPart, Port) :-
+  checkRangeTcpUdpPort(PortPart),
   string_chars(PortPart, PortChars),
   member(',', PortChars),
   split_string(PortPart, ',', '', PortList),
@@ -302,33 +330,42 @@ tcpHandle(PortPart, Port) :-
   member(ConvertedPort, ConvertedPortList).
 
 tcpHandle(PortPart, ConvertedPortPart) :-
+  checkRangeTcpUdpPort(PortPart),
   convertToDecimal(PortPart, ConvertedPortPart).
 
+% any
+tcpHandle("any", _).
 
 udpSrc(Port, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "udp", "src", "port", PortPart]),
-  checkRangeTcpUdpPort(PortPart),
   term_string(ResponseTerm, ResponseString),
   udpHandle(PortPart, Port).
+
+% wrong rule / wrong package / no rule matched
+udpSrc(_, _).
 
 udpDst(Port, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "udp", "dst", "port", PortPart]),
-  checkRangeTcpUdpPort(PortPart),
   term_string(ResponseTerm, ResponseString),
   udpHandle(PortPart, Port).
+
+% wrong rule / wrong package / no rule matched
+udpDst(_, _).
 
 udpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "udp", "dst", "port", DstPortPart, "src", "port", SrcPortPart]),
-  checkRangeTcpUdpPort(DstPortPart),
-  checkRangeTcpUdpPort(SrcPortPart),
   term_string(ResponseTerm, ResponseString),
   udpHandle(SrcPortPart, SrcPort),
   udpHandle(DstPortPart, DstPort).
 
+% wrong rule / wrong package / no rule matched
+udpSrcDst(_, _, _).
+
 udpHandle(PortPart, Port) :-
+  checkRangeTcpUdpPort(PortPart),
   string_chars(PortPart, PortChars),
   member('-', PortChars),
   split_string(PortPart, '-', '', [Start, Stop]),
@@ -343,6 +380,7 @@ udpHandle(PortPart, Port) :-
 
 udpHandle(PortPart, Port) :-
   string_chars(PortPart, PortChars),
+  checkRangeTcpUdpPort(PortPart),
   member(',', PortChars),
   split_string(PortPart, ',', '', PortList),
   convertListToDecimal(PortList, [], ConvertedPortList),
@@ -350,8 +388,11 @@ udpHandle(PortPart, Port) :-
   member(ConvertedPort, ConvertedPortList).
 
 udpHandle(PortPart, ConvertedPortPart) :-
+  checkRangeTcpUdpPort(PortPart),
   convertToDecimal(PortPart, ConvertedPortPart).
 
+% any
+udpHandle("any", _).
 
 % ----------------- ICMP CLAUSE ----------------- %
 
@@ -365,27 +406,33 @@ checkRangeTypeCode(Param) :-
 icmpType(Type, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "icmp", "type", TypePart]),
-  checkRangeTypeCode(TypePart),
   term_string(ResponseTerm, ResponseString),
   icmpHandle(TypePart, Type).
+
+% wrong rule / wrong package / no rule matched
+icmpType(_, _).
 
 icmpCode(Code, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "icmp", "code", CodePart]),
-  checkRangeTypeCode(CodePart),
   term_string(ResponseTerm, ResponseString),
   icmpHandle(CodePart, Code).
+
+% wrong rule / wrong package / no rule matched
+icmpCode(_, _).
 
 icmpTypeCode(Type, Code, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "icmp", "type", TypePart, "code", CodePart]),
-  checkRangeTypeCode(TypePart),
-  checkRangeTypeCode(CodePart),
   term_string(ResponseTerm, ResponseString),
   icmpHandle(TypePart, Type),
   icmpHandle(CodePart, Code).
 
+% wrong rule / wrong package / no rule matched
+icmpTypeCode(_, _, _).
+
 icmpHandle(ParamPart, Param) :-
+  checkRangeTypeCode(ParamPart),
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', [Start, Stop]),
@@ -399,6 +446,7 @@ icmpHandle(ParamPart, Param) :-
   ConvertedParamNumber =< RangeStop.
 
 icmpHandle(ParamPart, Param) :-
+  checkRangeTypeCode(ParamPart),
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
   split_string(ParamPart, ',', '', ParamList),
@@ -407,7 +455,11 @@ icmpHandle(ParamPart, Param) :-
   member(ConvertedParam, ConvertedParamList).
 
 icmpHandle(ParamPart, ConvertedParamPart) :-
+  checkRangeTypeCode(ParamPart),
   convertToDecimal(ParamPart, ConvertedParamPart).
+
+% any
+icmpHandle("any", _).
 
 % ----------------- IPv4 CLAUSE ----------------- %
 
@@ -428,12 +480,18 @@ ipSrc(Addr, ResponseTerm) :-
   term_string(ResponseTerm, ResponseString),
   ipHandle(AddrPart, Addr).
 
+% wrong rule / wrong package / no rule matched
+ipSrc(_, _).
+
 ipDst(Addr, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "dst", "addr", AddrPart]),
   checkRangeIPAddr(AddrPart),
   term_string(ResponseTerm, ResponseString),
   ipHandle(AddrPart, Addr).
+
+% wrong rule / wrong package / no rule matched
+ipDst(_, _).
 
 ipAddr(Addr, ResponseTerm) :-
   rule(Rule),
@@ -442,12 +500,18 @@ ipAddr(Addr, ResponseTerm) :-
   term_string(ResponseTerm, ResponseString),
   ipHandle(AddrPart, Addr).
 
+% wrong rule / wrong package / no rule matched
+ipAddr(_, _).
+
 ipProto(Addr, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "proto", ProtoId]),
   checkRangeIPProtoId(ProtoId),
   term_string(ResponseTerm, ResponseString),
   ipHandle(ProtoId, Addr).
+
+% wrong rule / wrong package / no rule matched
+ipProto(_, _).
 
 ipSrcDst(SrcAddr, DstAddr, ResponseTerm) :-
   rule(Rule),
@@ -457,6 +521,9 @@ ipSrcDst(SrcAddr, DstAddr, ResponseTerm) :-
   term_string(ResponseTerm, ResponseString),
   ipHandle(SrcAddrPart, SrcAddr),
   ipHandle(DstAddrPart, DstAddr).
+
+% wrong rule / wrong package / no rule matched
+ipSrcDst(_, _, _).
 
 ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
   rule(Rule),
@@ -468,6 +535,9 @@ ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
   ipHandle(SrcAddrPart, SrcAddr),
   ipHandle(DstAddrPart, DstAddr),
   ipHandle(ProtoIdPart, ProtoId).
+
+% wrong rule / wrong package / no rule matched
+ipSrcDstProto(_, _, _, _).
 
 ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
@@ -489,3 +559,6 @@ ipHandle(ParamPart, Param) :-
 ipHandle(ParamPart, Param) :-
   convertIpToDecimal(ParamPart, X),
   convertIpToDecimal(Param, X).
+
+% any
+ipHandle("any", _).

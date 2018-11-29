@@ -1,11 +1,10 @@
 packet(AdapterId, EtherProtoId, EtherVId, TCPsrcport, TCPdstport, UDPsrcport, UDPdstport, ICMPtype, ICMPcode, IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X) :-
-  adapter(AdapterIds, X),
+  adapter(AdapterId, X),
   ethernet(EtherProtoId, EtherVId, X),
   tcp(TCPsrcport, TCPdstport, X),
   udp(UDPsrcport, UDPdstport, X),
   icmp(ICMPtype, ICMPcode, X),
-  ip(IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X),
-  member(AdapterId, AdapterIds).
+  ip(IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X).
 
 ethernet(EtherProtoId, "", X) :-
   etherProto(EtherProtoId, X),
