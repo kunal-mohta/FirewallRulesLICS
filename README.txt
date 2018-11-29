@@ -121,6 +121,11 @@ These rules might collide with each other's result. In such situations, the foll
     (ii) Numerical/Alphabetic values in a clause/condition lies out of the ranges mentioned in 'CLAUSES.txt' file.
     (iii) Wrong syntax is used in writing down the clause/condition.
 
+- Wherever you wish to use decimal / hexadecimal / octal values, use correct prefixes :-
+    (i) Octal - '0', e.g. 10 = 012
+    (ii) Hexadecimal - '0x', e.g. 35 = 0x23
+    (iii) Decimal - No prefix
+
 ***********************************************************************
 
 Sample rules and package inputs are available in `Sample` folder.

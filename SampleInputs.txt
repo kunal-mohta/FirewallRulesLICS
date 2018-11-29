@@ -27,3 +27,8 @@ packet("F", "0x0804", "", "", "", "", "", "", "", "", "", "", "", Output).
 { * Use of decimal equivalent of hexadecimal value mentioned in rules * }
 packet("", "", "", "", "", "", "", "35", "", "", "", "", "", Output).
 [ Expected result :- Output = reject. ]
+
+
+**NOTE**
+Outputs mentioned here are based on the initial set of rules present in the `rulesDatabase.pl` file.
+These may not hold once this file has been tampered with.

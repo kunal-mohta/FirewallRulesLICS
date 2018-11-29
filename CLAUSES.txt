@@ -52,15 +52,13 @@ Syntax for rule:-
 
 Possible IPv4 addr values:-
   - Values of the form `n.n.n.n`
-  - Values of the form `n.n.n.n/netmask`\
-  where `n` is a number between 0 & 255 (allowed in decimal, octal, hexadecimal)\
-  and `netmask` is a number between 1 & 32 (allowed in decimal, octal, hexadecimal)
+  where `n` is a number between 0 & 255 (allowed in decimal, octal, hexadecimal)
 
 Possible Protocal type values:-
   - Number between 0 & 255 (allowed in decimal, octal, hexadecimal)
 
 Examples:-
-  - ip src addr 192.168.10.1/24
+  - ip src addr 192.168.10.1
   - ip dst addr 192.168.10.1-192.168.10.10
   - ip addr 192.168.10.1,192.168.10.2
   - ip proto 123
