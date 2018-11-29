@@ -159,7 +159,8 @@ adapter(Id, ResponseTerm) :-
   split_string(Rule, ' ', '', [ResponseString, "adapter"|SplitText]),
   term_string(ResponseTerm, ResponseString),
   last(Ids, SplitText),
-  adapterHandle(Ids, Id).
+  adapterHandle(Ids, Id),
+  !.
 
 % wrong rule / wrong package / no rule matched
 adapter(_, _).
@@ -206,13 +207,15 @@ etherProto(ProtoId, ResponseTerm) :-
   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
   checkRangeEtherProto(ProtoIdPart),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId, 0).
+  etherHandle(ProtoIdPart, ProtoId, 0),
+  !.
 
 etherProto(ProtoId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoId, ProtoIdPart, 1).
+  etherHandle(ProtoId, ProtoIdPart, 1),
+  !.
 
 % wrong rule / wrong package / no rule matched
 etherProto(_, _).
@@ -222,7 +225,8 @@ etherVlan(VId, ResponseTerm) :-
   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart]),
   checkRangeEtherVlan(VIdPart),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(VIdPart, VId, 0).
+  etherHandle(VIdPart, VId, 0),
+  !.
 
 % wrong rule / wrong package / no rule matched
 etherVlan(_, _).
@@ -234,7 +238,8 @@ etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   checkRangeEtherVlan(VIdPart),
   term_string(ResponseTerm, ResponseString),
   etherHandle(ProtoIdPart, ProtoId, 1),
-  etherHandle(VIdPart, VId, 0).
+  etherHandle(VIdPart, VId, 0),
+  !.
 
 % wrong rule / wrong package / no rule matched
 etherProtoVlan(_, _, _).
