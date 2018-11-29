@@ -13,7 +13,8 @@
 % rule('accept ether proto 0x0808').
 % rule('drop ether vid any').
 % rule('reject ether proto any').
-rule('reject ether vid any proto any').
+% rule('reject ether vid any proto any').
+rule('reject ether vid !(1-10)').
 % rule('accept ether proto 123').
 
 % ----------------- TCP-UDP Condition Rules ----------------- %

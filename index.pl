@@ -261,6 +261,14 @@ etherProtoVlan(_, _, accept).
 
 etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
+  member('!', ParamChars),
+  member('(', ParamChars),
+  member(')', ParamChars),
+  split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  not(etherHandle(MainParamPart, Param, _)).
+
+etherHandle(ParamPart, Param, _) :-
+  string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', [Start, Stop]),
   convertToDecimal(Start, DecimalStart),
@@ -327,6 +335,14 @@ tcpSrcDst(SrcPort, DstPort, ResponseTerm) :-
 tcpSrcDst(_, _, accept).
 
 tcpHandle(PortPart, Port) :-
+  string_chars(PortPart, PortChars),
+  member('!', PortChars),
+  member('(', PortChars),
+  member(')', PortChars),
+  split_string(PortPart, "!()", "", [_, _, MainPortPart, _]),
+  not(tcpHandle(MainPortPart, Port)).
+
+tcpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
   string_chars(PortPart, PortChars),
   member('-', PortChars),
@@ -383,6 +399,14 @@ udpSrcDst(SrcPort, DstPort, ResponseTerm) :-
 
 % wrong rule / wrong package / no rule matched
 udpSrcDst(_, _, accept).
+
+udpHandle(PortPart, Port) :-
+  string_chars(PortPart, PortChars),
+  member('!', PortChars),
+  member('(', PortChars),
+  member(')', PortChars),
+  split_string(PortPart, "!()", "", [_, _, MainPortPart, _]),
+  not(udpHandle(MainPortPart, Port)).
 
 udpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
@@ -450,6 +474,14 @@ icmpTypeCode(Type, Code, ResponseTerm) :-
 
 % wrong rule / wrong package / no rule matched
 icmpTypeCode(_, _, accept).
+
+icmpHandle(ParamPart, Param) :-
+  string_chars(ParamPart, ParamChars),
+  member('!', ParamChars),
+  member('(', ParamChars),
+  member(')', ParamChars),
+  split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  not(icmpHandle(MainParamPart, Param)).
 
 icmpHandle(ParamPart, Param) :-
   checkRangeTypeCode(ParamPart),
@@ -558,6 +590,14 @@ ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
 
 % wrong rule / wrong package / no rule matched
 ipSrcDstProto(_, _, _, accept).
+
+ipHandle(ParamPart, Param) :-
+  string_chars(ParamPart, ParamChars),
+  member('!', ParamChars),
+  member('(', ParamChars),
+  member(')', ParamChars),
+  split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  not(ipHandle(MainParamPart, Param)).
 
 ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),

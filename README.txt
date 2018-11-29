@@ -20,9 +20,9 @@ $ swipl index.pl
 - Sample rules are preloaded, and can be found in `rulesDatabase.pl` file. You can edit the rules (add / delete / modify) in the same file.
 Please find format to write rules under the `RULES FORMAT` heading in this file.
 
-- You are ready to use the program. Please find the format to write input packages under the `INPUT FORMAT` heading in this file.
+- You are ready to use the program. Please find the format to write input packets under the `INPUT FORMAT` heading in this file.
 ```
-?- package(...).
+?- packet(...).
 ```
 
 ***********************************************************************
@@ -72,7 +72,7 @@ packet(
   Output).
 ```
 
-The first 13 parameters should be strings, representing the mentioned clause/condition parameter (e.g. <tcp-src-port> refers to the src port number for the TCP condition), and the last parameter gives the Action taken for the package, i.e. `accept / reject / drop`.
+The first 13 parameters should be strings, representing the mentioned clause/condition parameter (e.g. <tcp-src-port> refers to the src port number for the TCP condition), and the last parameter gives the Action taken for the packet, i.e. `accept / reject / drop`.
 
 If you want a clause/condition parameter to be not specified in the packet, just put an empty string ("") in its place.
 
@@ -106,9 +106,9 @@ For Example -
 The 2 separate rules - 'accept tcp src addr 192.168.17.10' and 'accept tcp dst addr 192.168.17.15'
 are NOT THE SAME as the single rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15'
 Both are treated differently.
-For Example, considering the rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15', the only package that will match this will be the one where BOTH src and dst parameters match the rule. Individual matching of the parameters is not sufficient.
+For Example, considering the rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15', the only packet that will match this will be the one where BOTH src and dst parameters match the rule. Individual matching of the parameters is not sufficient.
 
-- There might be situations where multiple rules apply to the given package.
+- There might be situations where multiple rules apply to the given packet.
 These rules might collide with each other's result. In such situations, the following convention is followed -
     (i) If the colliding rules are of the same Clause/Condition, then the rule APPEARING FIRST in the order of rules will be give higher priority, i.e. its output action will be considered.
     (ii) If the colliding rules are of different Clauses/Conditions, then priority will be decided based on the output actions of the rules.
@@ -117,7 +117,7 @@ These rules might collide with each other's result. In such situations, the foll
 - The 'any' keyword will be applied to any value of the parameter, i.e. even if the parameter is left empty (empty string ""), then too the rule will apply to it.
 
 - Default action is taken as 'accept'. This is for the situations when :-
-    (i) No rule matches the clause/condition in the package.
+    (i) No rule matches the clause/condition in the packet.
     (ii) Numerical/Alphabetic values in a clause/condition lies out of the ranges mentioned in 'CLAUSES.txt' file.
     (iii) Wrong syntax is used in writing down the clause/condition.
 
@@ -128,4 +128,4 @@ These rules might collide with each other's result. In such situations, the foll
 
 ***********************************************************************
 
-Sample rules and package inputs are available in `Sample` folder.
+Sample rules and packet inputs are available in `Sample` folder.
