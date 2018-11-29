@@ -214,7 +214,7 @@ etherProto(ProtoId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoId, ProtoIdPart, 1),
+  etherHandle(ProtoIdPart, ProtoId, 1),
   !.
 
 % wrong rule / wrong package / no rule matched
@@ -228,6 +228,13 @@ etherVlan(VId, ResponseTerm) :-
   etherHandle(VIdPart, VId, 0),
   !.
 
+etherVlan(VId, ResponseTerm) :-
+  rule(Rule),
+  split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart]),
+  term_string(ResponseTerm, ResponseString),
+  etherHandle(VIdPart, VId, 1),
+  !.
+
 % wrong rule / wrong package / no rule matched
 etherVlan(_, accept).
 
@@ -239,6 +246,14 @@ etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   term_string(ResponseTerm, ResponseString),
   etherHandle(ProtoIdPart, ProtoId, 1),
   etherHandle(VIdPart, VId, 0),
+  !.
+
+etherProtoVlan(ProtoId, VId, ResponseTerm) :-
+  rule(Rule),
+  split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart, "proto", ProtoIdPart]),
+  term_string(ResponseTerm, ResponseString),
+  etherHandle(ProtoIdPart, ProtoId, 1),
+  etherHandle(VIdPart, VId, 1),
   !.
 
 % wrong rule / wrong package / no rule matched
@@ -269,7 +284,7 @@ etherHandle(ParamPart, ConvertedParamPart, _) :-
   convertToDecimal(ParamPart, ConvertedParamPart).
 
 % any
-etherHandle(_, "any", _).
+etherHandle("any", _, 1).
 
 etherHandle(ProtoAlias, _, 1) :-
   aliasList(AliasList),
