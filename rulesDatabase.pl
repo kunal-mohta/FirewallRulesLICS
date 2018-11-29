@@ -11,3 +11,4 @@ rule("reject ip src addr 192.167.10.1 dst addr 192.167.10.255 proto 1,2").
 rule("drop adapter D").
 rule("reject adapter D,E").
 rule("reject icmp type 0x23").
+rule("drop ether proto !(3-999)").

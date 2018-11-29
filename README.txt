@@ -126,6 +126,12 @@ These rules might collide with each other's result. In such situations, the foll
     (ii) Hexadecimal - '0x', e.g. 35 = 0x23
     (iii) Decimal - No prefix
 
+- NOT expressions should be used carefully. Only valid expressions should be used inside !(...). Using invalid expressions will lead to ambiguous results. For example !(asdf) is invalid for any clause/condition.
+
 ***********************************************************************
 
-Sample rules and packet inputs are available in `Sample` folder.
+SAMPLE INPUTS
+
+Plesase find the sample input values, to test the program, in `SampleInputs.txt`
+
+***********************************************************************

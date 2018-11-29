@@ -28,6 +28,10 @@ packet("F", "0x0804", "", "", "", "", "", "", "", "", "", "", "", Output).
 packet("", "", "", "", "", "", "", "35", "", "", "", "", "", Output).
 [ Expected result :- Output = reject. ]
 
+{ * Packet for NOT expression rule * }
+packet("", "", "2", "", "", "", "", "", "", "", "", "", "", Output).
+[ Expected result :- Output = drop. ]
+
 
 **NOTE**
 Outputs mentioned here are based on the initial set of rules present in the `rulesDatabase.pl` file.

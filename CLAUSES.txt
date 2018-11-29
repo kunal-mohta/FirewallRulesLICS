@@ -102,3 +102,11 @@ Syntax for rule:-
   - icmp type 3-222 code 100
 
 ********************
+
+NOTE -
+- All the numerical parameters in the clauses/conditions support decimal, octal and hexadecimal values.
+- All the parameters support "NOT expressions", i.e. !(...), which is used to select all values other than those mentioned inside paranthesis.
+For example-
+    - !(1) => All allowed values other than 1
+    - !(A,B) => All allowed values other than A,B
+    - !(100-200) => All allowed values other than those lying in range 100-200
