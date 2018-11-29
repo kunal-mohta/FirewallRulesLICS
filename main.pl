@@ -1,10 +1,27 @@
-packet(AdapterId, EtherProtoId, EtherVId, TCPsrcport, TCPdstport, UDPsrcport, UDPdstport, ICMPtype, ICMPcode, IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, A, B, C, D, E, F) :-
+packet(AdapterId, EtherProtoId, EtherVId, TCPsrcport, TCPdstport, UDPsrcport, UDPdstport, ICMPtype, ICMPcode, IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X) :-
   adapter(AdapterId, A),
   ethernet(EtherProtoId, EtherVId, B),
   tcp(TCPsrcport, TCPdstport, C),
   udp(UDPsrcport, UDPdstport, D),
   icmp(ICMPtype, ICMPcode, E),
-  ip(IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, F).
+  ip(IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, F),
+  Actions = [A, B, C, D, E, F],
+  finalAction(Actions, X).
+
+finalAction(Actions, X) :-
+  member(reject, Actions),
+  X = reject,
+  !.
+
+finalAction(Actions, X) :-
+  member(drop, Actions),
+  X = drop,
+  !.
+
+finalAction(Actions, X) :-
+  member(accept, Actions),
+  X = accept,
+  !.
 
 ethernet(EtherProtoId, "", X) :-
   etherProto(EtherProtoId, X),

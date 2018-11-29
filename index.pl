@@ -163,7 +163,7 @@ adapter(Id, ResponseTerm) :-
   !.
 
 % wrong rule / wrong package / no rule matched
-adapter(_, _).
+adapter(_, accept).
 
 % normal
 adapterHandle(ParamPart, Param) :-
@@ -218,7 +218,7 @@ etherProto(ProtoId, ResponseTerm) :-
   !.
 
 % wrong rule / wrong package / no rule matched
-etherProto(_, _).
+etherProto(_, accept).
 
 etherVlan(VId, ResponseTerm) :-
   rule(Rule),
@@ -229,7 +229,7 @@ etherVlan(VId, ResponseTerm) :-
   !.
 
 % wrong rule / wrong package / no rule matched
-etherVlan(_, _).
+etherVlan(_, accept).
 
 etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   rule(Rule),
@@ -242,7 +242,7 @@ etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   !.
 
 % wrong rule / wrong package / no rule matched
-etherProtoVlan(_, _, _).
+etherProtoVlan(_, _, accept).
 
 etherHandle(ParamPart, Param, _) :-
   string_chars(ParamPart, ParamChars),
@@ -290,7 +290,7 @@ tcpSrc(Port, ResponseTerm) :-
   tcpHandle(PortPart, Port).
 
 % wrong rule / wrong package / no rule matched
-tcpSrc(_, _).
+tcpSrc(_, accept).
 
 tcpDst(Port, ResponseTerm) :-
   rule(Rule),
@@ -299,7 +299,7 @@ tcpDst(Port, ResponseTerm) :-
   tcpHandle(PortPart, Port).
 
 % wrong rule / wrong package / no rule matched
-tcpDst(_, _).
+tcpDst(_, accept).
 
 tcpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   rule(Rule),
@@ -309,7 +309,7 @@ tcpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   tcpHandle(DstPortPart, DstPort).
 
 % wrong rule / wrong package / no rule matched
-tcpSrcDst(_, _, _).
+tcpSrcDst(_, _, accept).
 
 tcpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
@@ -348,7 +348,7 @@ udpSrc(Port, ResponseTerm) :-
   udpHandle(PortPart, Port).
 
 % wrong rule / wrong package / no rule matched
-udpSrc(_, _).
+udpSrc(_, accept).
 
 udpDst(Port, ResponseTerm) :-
   rule(Rule),
@@ -357,7 +357,7 @@ udpDst(Port, ResponseTerm) :-
   udpHandle(PortPart, Port).
 
 % wrong rule / wrong package / no rule matched
-udpDst(_, _).
+udpDst(_, accept).
 
 udpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   rule(Rule),
@@ -367,7 +367,7 @@ udpSrcDst(SrcPort, DstPort, ResponseTerm) :-
   udpHandle(DstPortPart, DstPort).
 
 % wrong rule / wrong package / no rule matched
-udpSrcDst(_, _, _).
+udpSrcDst(_, _, accept).
 
 udpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
@@ -415,7 +415,7 @@ icmpType(Type, ResponseTerm) :-
   icmpHandle(TypePart, Type).
 
 % wrong rule / wrong package / no rule matched
-icmpType(_, _).
+icmpType(_, accept).
 
 icmpCode(Code, ResponseTerm) :-
   rule(Rule),
@@ -424,7 +424,7 @@ icmpCode(Code, ResponseTerm) :-
   icmpHandle(CodePart, Code).
 
 % wrong rule / wrong package / no rule matched
-icmpCode(_, _).
+icmpCode(_, accept).
 
 icmpTypeCode(Type, Code, ResponseTerm) :-
   rule(Rule),
@@ -434,7 +434,7 @@ icmpTypeCode(Type, Code, ResponseTerm) :-
   icmpHandle(CodePart, Code).
 
 % wrong rule / wrong package / no rule matched
-icmpTypeCode(_, _, _).
+icmpTypeCode(_, _, accept).
 
 icmpHandle(ParamPart, Param) :-
   checkRangeTypeCode(ParamPart),
@@ -486,7 +486,7 @@ ipSrc(Addr, ResponseTerm) :-
   ipHandle(AddrPart, Addr).
 
 % wrong rule / wrong package / no rule matched
-ipSrc(_, _).
+ipSrc(_, accept).
 
 ipDst(Addr, ResponseTerm) :-
   rule(Rule),
@@ -496,7 +496,7 @@ ipDst(Addr, ResponseTerm) :-
   ipHandle(AddrPart, Addr).
 
 % wrong rule / wrong package / no rule matched
-ipDst(_, _).
+ipDst(_, accept).
 
 ipAddr(Addr, ResponseTerm) :-
   rule(Rule),
@@ -506,7 +506,7 @@ ipAddr(Addr, ResponseTerm) :-
   ipHandle(AddrPart, Addr).
 
 % wrong rule / wrong package / no rule matched
-ipAddr(_, _).
+ipAddr(_, accept).
 
 ipProto(Addr, ResponseTerm) :-
   rule(Rule),
@@ -516,7 +516,7 @@ ipProto(Addr, ResponseTerm) :-
   ipHandle(ProtoId, Addr).
 
 % wrong rule / wrong package / no rule matched
-ipProto(_, _).
+ipProto(_, accept).
 
 ipSrcDst(SrcAddr, DstAddr, ResponseTerm) :-
   rule(Rule),
@@ -528,7 +528,7 @@ ipSrcDst(SrcAddr, DstAddr, ResponseTerm) :-
   ipHandle(DstAddrPart, DstAddr).
 
 % wrong rule / wrong package / no rule matched
-ipSrcDst(_, _, _).
+ipSrcDst(_, _, accept).
 
 ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
   rule(Rule),
@@ -542,7 +542,7 @@ ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
   ipHandle(ProtoIdPart, ProtoId).
 
 % wrong rule / wrong package / no rule matched
-ipSrcDstProto(_, _, _, _).
+ipSrcDstProto(_, _, _, accept).
 
 ipHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),

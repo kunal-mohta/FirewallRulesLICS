@@ -51,7 +51,7 @@ rule('accept ip src addr 192.167.10.1').
 rule('reject ip src addr 192.167.10.1-192.167.10.3').
 rule('reject ip dst addr 192.167.10.33').
 rule('drop ip addr 192.167.10.123').
-rule('accept ip proto 123').
 rule('reject ip proto 123').
+rule('drop ip proto 123').
 rule('accept ip src addr 192.167.10.1 dst addr 192.167.10.33').
 rule('drop ip src addr 192.167.10.1 dst addr 192.167.10.255 proto 123').
