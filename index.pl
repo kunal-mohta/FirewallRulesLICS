@@ -1,5 +1,5 @@
 :- include('main.pl').
-:- include('encodedRules.pl').
+% :- include('encodedRules.pl').
 
 % ----------------- Utilities ----------------- %
 

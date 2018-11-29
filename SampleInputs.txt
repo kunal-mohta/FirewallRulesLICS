@@ -1,0 +1,29 @@
+SAMPLE INPUTS
+
+Copy these and use them in the command line, as mentioned in the README.txt file, under heading 'INSTRUCTIONS TO RUN THE PROGRAM'
+
+
+packet("A", "0x0801", "0x0800", "0", "0xFFFF", "", "", "111", "100", "", "", "", "123", Output).
+[ Expected result :- Output = drop. ]
+
+packet("F", "", "", "", "", "", "0x123", "", "0124", "192.167.10.1", "192.167.10.255", "", "2", Output).
+[ Expected result :- Output = reject. ]
+
+packet("H", "", "", "", "", "", "0x321", "", "0123", "", "", "", "", Output).
+[ Expected result :- Output = accept. ]
+
+{ * Default case when no rule matched * }
+packet("", "", "", "", "", "", "", "", "", "", "", "", "", Output).
+[ Expected result :- Output = accept. ]
+
+{ * Same clause colliding rules - rule appearing first considered * }
+packet("D", "", "", "", "", "", "", "", "", "", "", "", "", Output).
+[ Expected result :- Output = drop. ]
+
+{ * Different clause colliding rules - priority based on reject > drop > accept * }
+packet("F", "0x0804", "", "", "", "", "", "", "", "", "", "", "", Output).
+[ Expected result :- Output = reject. ]
+
+{ * Use of decimal equivalent of hexadecimal value mentioned in rules * }
+packet("", "", "", "", "", "", "", "35", "", "", "", "", "", Output).
+[ Expected result :- Output = reject. ]

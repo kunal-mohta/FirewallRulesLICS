@@ -1,4 +1,4 @@
-packet(AdapterId, EtherProtoId, EtherVId, TCPsrcport, TCPdstport, UDPsrcport, UDPdstport, ICMPtype, ICMPcode, IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X) :-
+packet(AdapterId, EtherVId, EtherProtoId, TCPdstport, TCPsrcport, UDPdstport, UDPsrcport, ICMPtype, ICMPcode, IPsrcAddr, IPdstAddr, IPAddr, IPProtoId, X) :-
   adapter(AdapterId, A),
   ethernet(EtherProtoId, EtherVId, B),
   tcp(TCPsrcport, TCPdstport, C),

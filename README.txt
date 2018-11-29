@@ -57,12 +57,12 @@ For this program, inputs are given by `packet/14` predicates, following the foll
 ```
 packet(
   <adapter-id>,
-  <ethernet-protocol-id>,
   <ethernet-vlan-number>,
-  <tcp-src-port>,
+  <ethernet-protocol-id>,
   <tcp-dst-port>,
-  <udp-src-port>,
+  <tcp-src-port>,
   <udp-dst-port>,
+  <udp-src-port>,
   <icmp-type>,
   <icmp-code>,
   <ip-src-addr>,
@@ -106,6 +106,7 @@ For Example -
 The 2 separate rules - 'accept tcp src addr 192.168.17.10' and 'accept tcp dst addr 192.168.17.15'
 are NOT THE SAME as the single rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15'
 Both are treated differently.
+For Example, considering the rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15', the only package that will match this will be the one where BOTH src and dst parameters match the rule. Individual matching of the parameters is not sufficient.
 
 - There might be situations where multiple rules apply to the given package.
 These rules might collide with each other's result. In such situations, the following convention is followed -
@@ -114,6 +115,11 @@ These rules might collide with each other's result. In such situations, the foll
     The priority order in this case is - Reject > Drop > Accept.
 
 - The 'any' keyword will be applied to any value of the parameter, i.e. even if the parameter is left empty (empty string ""), then too the rule will apply to it.
+
+- Default action is taken as 'accept'. This is for the situations when :-
+    (i) No rule matches the clause/condition in the package.
+    (ii) Numerical/Alphabetic values in a clause/condition lies out of the ranges mentioned in 'CLAUSES.txt' file.
+    (iii) Wrong syntax is used in writing down the clause/condition.
 
 ***********************************************************************
 
