@@ -89,7 +89,31 @@ Output = accept
 ?- packet("G", "0x0808", "", "130", "", "0x321", "", "0123", "", "192.167.10.2", "", "", "", Output).
 Output = reject
 
+
+**IMPORTANT**
+In the above syntax, please take care of where the spaces are. Using them at wrong places might lead to faulty results.
+For example,
+'ip src addr 192.168.10.1, 192.168.10.10' is not a valid syntax, because of the space after the comma.
+
 ```
+
+***********************************************************************
+
+IMPORTANT INFORMATION RELATED TO THE FUNCTIONALITY OF THE PROGRAM
+
+- Clauses having multiple optional parameters should be dealt with carefully. Their permutation follow a strict fashion.
+For Example -
+The 2 separate rules - 'accept tcp src addr 192.168.17.10' and 'accept tcp dst addr 192.168.17.15'
+are NOT THE SAME as the single rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15'
+Both are treated differently.
+
+- There might be situations where multiple rules apply to the given package.
+These rules might collide with each other's result. In such situations, the following convention is followed -
+    (i) If the colliding rules are of the same Clause/Condition, then the rule APPEARING FIRST in the order of rules will be give higher priority, i.e. its output action will be considered.
+    (ii) If the colliding rules are of different Clauses/Conditions, then priority will be decided based on the output actions of the rules.
+    The priority order in this case is - Reject > Drop > Accept.
+
+- The 'any' keyword will be applied to any value of the parameter, i.e. even if the parameter is left empty (empty string ""), then too the rule will apply to it.
 
 ***********************************************************************
 
