@@ -13,7 +13,7 @@ rule('reject adapter any').
 % rule('accept ether proto 0x0808').
 % rule('drop ether vid any').
 % rule('reject ether proto any').
-% rule('reject ether vid any proto any').
+rule('reject ether vid 11 proto any').
 % rule('reject ether vid !(1-10)').
 % rule('accept ether proto 123').
 
@@ -57,4 +57,4 @@ rule('reject adapter any').
 % rule('reject ip proto 123').
 % rule('drop ip proto 123').
 % rule('accept ip src addr 192.167.10.1 dst addr 192.167.10.33').
-% rule('drop ip src addr 192.167.10.1 dst addr 192.167.10.255 proto 123').
+% rule('drop ip src addr 192.167.10.1 dst addr 192.167.10.255 proto any').

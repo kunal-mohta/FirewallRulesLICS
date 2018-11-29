@@ -212,31 +212,31 @@ checkRangeEtherVlan(Param) :-
 
 % % % %
 
-etherProto(ProtoId, ResponseTerm) :-
-  rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
-  checkRangeEtherProto(ProtoIdPart),
-  term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId, 0),
-  !.
+% etherProto(ProtoId, ResponseTerm) :-
+%   rule(Rule),
+%   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
+%   checkRangeEtherProto(ProtoIdPart),
+%   term_string(ResponseTerm, ResponseString),
+%   etherHandle(ProtoIdPart, ProtoId, 0),
+%   !.
 
 etherProto(ProtoId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId, 1),
+  etherHandle(ProtoIdPart, ProtoId, 0),
   !.
 
 % wrong rule / wrong package / no rule matched
 etherProto(_, accept).
 
-etherVlan(VId, ResponseTerm) :-
-  rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart]),
-  checkRangeEtherVlan(VIdPart),
-  term_string(ResponseTerm, ResponseString),
-  etherHandle(VIdPart, VId, 0),
-  !.
+% etherVlan(VId, ResponseTerm) :-
+%   rule(Rule),
+%   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart]),
+%   checkRangeEtherVlan(VIdPart),
+%   term_string(ResponseTerm, ResponseString),
+%   etherHandle(VIdPart, VId, 0),
+%   !.
 
 etherVlan(VId, ResponseTerm) :-
   rule(Rule),
@@ -248,38 +248,49 @@ etherVlan(VId, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 etherVlan(_, accept).
 
-etherProtoVlan(ProtoId, VId, ResponseTerm) :-
-  rule(Rule),
-  split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart, "proto", ProtoIdPart]),
-  checkRangeEtherProto(ProtoIdPart),
-  checkRangeEtherVlan(VIdPart),
-  term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId, 1),
-  etherHandle(VIdPart, VId, 0),
-  !.
+% etherProtoVlan(ProtoId, VId, ResponseTerm) :-
+%   rule(Rule),
+%   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart, "proto", ProtoIdPart]),
+%   checkRangeEtherProto(ProtoIdPart),
+%   checkRangeEtherVlan(VIdPart),
+%   term_string(ResponseTerm, ResponseString),
+%   etherHandle(ProtoIdPart, ProtoId, 1),
+%   etherHandle(VIdPart, VId, 0),
+%   !.
 
 etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart, "proto", ProtoIdPart]),
   term_string(ResponseTerm, ResponseString),
-  etherHandle(ProtoIdPart, ProtoId, 1),
+  etherHandle(ProtoIdPart, ProtoId, 0),
   etherHandle(VIdPart, VId, 1),
   !.
 
 % wrong rule / wrong package / no rule matched
 etherProtoVlan(_, _, accept).
 
+rangeCheckEtherHandle(RangeCheckIndex, ParamPart, Param) :-
+  RangeCheckIndex = 0,
+  checkRangeEtherProto(ParamPart),
+  checkRangeEtherProto(Param).
+
+rangeCheckEtherHandle(RangeCheckIndex, ParamPart, Param) :-
+  RangeCheckIndex = 1,
+  checkRangeEtherVlan(ParamPart),
+  checkRangeEtherVlan(Param).
+
 % not expression
-etherHandle(ParamPart, Param, _) :-
+etherHandle(ParamPart, Param, RangeCheckIndex) :-
   string_chars(ParamPart, ParamChars),
   member('!', ParamChars),
   member('(', ParamChars),
   member(')', ParamChars),
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
-  not(etherHandle(MainParamPart, Param, _)).
+  not(etherHandle(MainParamPart, Param, RangeCheckIndex)).
 
 % range
-etherHandle(ParamPart, Param, _) :-
+etherHandle(ParamPart, Param, RangeCheckIndex) :-
+  rangeCheckEtherHandle(RangeCheckIndex, ParamPart, Param),
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', [Start, Stop]),
@@ -293,7 +304,8 @@ etherHandle(ParamPart, Param, _) :-
   ConvertedParamNumber =< RangeStop.
 
 % comma-separated
-etherHandle(ParamPart, Param, _) :-
+etherHandle(ParamPart, Param, RangeCheckIndex) :-
+  rangeCheckEtherHandle(RangeCheckIndex, ParamPart, Param),
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
   split_string(ParamPart, ',', '', ParamList),
@@ -302,15 +314,17 @@ etherHandle(ParamPart, Param, _) :-
   member(ConvertedParam, ConvertedParamList).
 
 % normal
-etherHandle(ParamPart, ConvertedParamPart, _) :-
-  convertToDecimal(ParamPart, ConvertedParamPart).
+etherHandle(ParamPart, Param, RangeCheckIndex) :-
+  rangeCheckEtherHandle(RangeCheckIndex, ParamPart, Param),
+  convertToDecimal(ParamPart, X),
+  convertToDecimal(Param, X).
 
 % any
-etherHandle("any", Param, 1) :-
+etherHandle("any", Param, _) :-
   not(Param = "").
 
 % aliases
-etherHandle(ProtoAlias, _, 1) :-
+etherHandle(ProtoAlias, _, _) :-
   aliasList(AliasList),
   member(ProtoAlias, AliasList).
 
@@ -559,9 +573,8 @@ checkRangeIPAddr(Param) :-
 ipSrc(Addr, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", AddrPart]),
-  checkRangeIPAddr(AddrPart),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(AddrPart, Addr).
+  ipHandle(AddrPart, Addr, 0).
 
 % wrong rule / wrong package / no rule matched
 ipSrc(_, accept).
@@ -569,9 +582,8 @@ ipSrc(_, accept).
 ipDst(Addr, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "dst", "addr", AddrPart]),
-  checkRangeIPAddr(AddrPart),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(AddrPart, Addr).
+  ipHandle(AddrPart, Addr, 0).
 
 % wrong rule / wrong package / no rule matched
 ipDst(_, accept).
@@ -579,9 +591,8 @@ ipDst(_, accept).
 ipAddr(Addr, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "addr", AddrPart]),
-  checkRangeIPAddr(AddrPart),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(AddrPart, Addr).
+  ipHandle(AddrPart, Addr, 0).
 
 % wrong rule / wrong package / no rule matched
 ipAddr(_, accept).
@@ -589,9 +600,8 @@ ipAddr(_, accept).
 ipProto(Addr, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "proto", ProtoId]),
-  checkRangeIPProtoId(ProtoId),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(ProtoId, Addr).
+  ipHandle(ProtoId, Addr, 1).
 
 % wrong rule / wrong package / no rule matched
 ipProto(_, accept).
@@ -599,11 +609,9 @@ ipProto(_, accept).
 ipSrcDst(SrcAddr, DstAddr, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", SrcAddrPart, "dst", "addr", DstAddrPart]),
-  checkRangeIPAddr(SrcAddrPart),
-  checkRangeIPAddr(DstAddrPart),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(SrcAddrPart, SrcAddr),
-  ipHandle(DstAddrPart, DstAddr).
+  ipHandle(SrcAddrPart, SrcAddr, 0),
+  ipHandle(DstAddrPart, DstAddr, 0).
 
 % wrong rule / wrong package / no rule matched
 ipSrcDst(_, _, accept).
@@ -611,28 +619,37 @@ ipSrcDst(_, _, accept).
 ipSrcDstProto(SrcAddr, DstAddr, ProtoId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ip", "src", "addr", SrcAddrPart, "dst", "addr", DstAddrPart, "proto", ProtoIdPart]),
-  checkRangeIPAddr(SrcAddrPart),
-  checkRangeIPAddr(DstAddrPart),
-  checkRangeIPProtoId(ProtoIdPart),
   term_string(ResponseTerm, ResponseString),
-  ipHandle(SrcAddrPart, SrcAddr),
-  ipHandle(DstAddrPart, DstAddr),
-  ipHandle(ProtoIdPart, ProtoId).
+  ipHandle(SrcAddrPart, SrcAddr, 0),
+  ipHandle(DstAddrPart, DstAddr, 0),
+  ipHandle(ProtoIdPart, ProtoId, 1).
 
 % wrong rule / wrong package / no rule matched
 ipSrcDstProto(_, _, _, accept).
 
+% range checking predicate
+rangeCheckIpHandle(RangeCheckIndex, ParamPart, Param) :-
+  RangeCheckIndex = 0,
+  checkRangeIPAddr(ParamPart),
+  checkRangeIPAddr(Param).
+
+rangeCheckIpHandle(RangeCheckIndex, ParamPart, Param) :-
+  RangeCheckIndex = 1,
+  checkRangeIPProtoId(ParamPart),
+  checkRangeIPProtoId(Param).
+
 % not expression
-ipHandle(ParamPart, Param) :-
+ipHandle(ParamPart, Param, RangeCheckIndex) :-
   string_chars(ParamPart, ParamChars),
   member('!', ParamChars),
   member('(', ParamChars),
   member(')', ParamChars),
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
-  not(ipHandle(MainParamPart, Param)).
+  not(ipHandle(MainParamPart, Param, RangeCheckIndex)).
 
 % range
-ipHandle(ParamPart, Param) :-
+ipHandle(ParamPart, Param, RangeCheckIndex) :-
+  rangeCheckIpHandle(RangeCheckIndex, ParamPart, Param),
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', [Start, Stop]),
@@ -642,7 +659,8 @@ ipHandle(ParamPart, Param) :-
   ipInRange(ConvertedParam, DecimalStart, DecimalStop).
 
 % comma-separated
-ipHandle(ParamPart, Param) :-
+ipHandle(ParamPart, Param, RangeCheckIndex) :-
+  rangeCheckIpHandle(RangeCheckIndex, ParamPart, Param),
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
   split_string(ParamPart, ',', '', ParamList),
@@ -651,12 +669,13 @@ ipHandle(ParamPart, Param) :-
   member(ConvertedParam, ConvertedParamList).
 
 % normal
-ipHandle(ParamPart, Param) :-
+ipHandle(ParamPart, Param, RangeCheckIndex) :-
+  rangeCheckIpHandle(RangeCheckIndex, ParamPart, Param),
   convertIpToDecimal(ParamPart, X),
   convertIpToDecimal(Param, X).
 
 % any
-ipHandle("any", Param) :-
+ipHandle("any", Param, _) :-
   not(Param = "").
 
 

@@ -1,6 +1,6 @@
 FIREWALL RULES IN PROLOG - LOGIN IN COMPUTER SCIENCE
 
-This is project is the Prolog Assignment, for Logic in Computer Science (CS F214) course, at BITS Pilani.
+This project is the Prolog Assignment, for Logic in Computer Science (CS F214) course, at BITS Pilani.
 
 It was made by group of 2 students -
 - Kunal Mohta - 2017A7PS0148P
