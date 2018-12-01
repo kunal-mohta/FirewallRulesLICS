@@ -26,10 +26,12 @@ finalAction(Actions, X) :-
 
 % middleware predicates
 ethernet(EtherProtoId, "", X) :-
+  not(EtherProtoId = ""),
   etherProto(EtherProtoId, X),
   !.
 
 ethernet("", EtherVId, X) :-
+  not(EtherVId = ""),
   etherVlan(EtherVId, X),
   !.
 

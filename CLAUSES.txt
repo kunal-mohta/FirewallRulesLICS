@@ -9,10 +9,8 @@ Syntax for rule:- adapter `<adapter-id>`
 
 Possible Adapter ID values:-
   - Alphabets A through H (must be in uppercase)
-  - Keyword `any` (must be lowercase)
 
 Examples:-
-  - adapter any
   - adapter A
   - adapter A,B
   - adapter A-D
@@ -28,12 +26,15 @@ Syntax for rule:-
 
 Possible Protocol ID values:-
   - Number between 0 & 65535 (allowed in decimal, octal, hexadecimal)
+  - Alias notations like "arp", "aarp", "atalk", "ipx", "mlps", "netbui", "pppoe", "rarp", "sna", "xns"
+  (NOTE - packet should have the exact same alias name)
 
 Possible VLAN Number values:-
   - Number between 0 & 4095 (allowed in decimal, octal, hexadecimal)
 
 Examples:-
   - ether proto 0x0800
+  - ether proto pppoe
   - ether proto 0x0800-0x0802
   - ether vid 1
   - ether vid 3-999 proto 0x0800
@@ -105,6 +106,12 @@ Syntax for rule:-
 
 NOTE -
 - All the numerical parameters in the clauses/conditions support decimal, octal and hexadecimal values.
+
+- All the parameters support `any` keyword. Use this to match the rule with packets that specify any value of the parameter for the clause/condition.
+For example-
+    - adapter any
+    - ether proto any
+
 - All the parameters support "NOT expressions", i.e. !(...), which is used to select all values other than those mentioned inside paranthesis.
 For example-
     - !(1) => All allowed values other than 1

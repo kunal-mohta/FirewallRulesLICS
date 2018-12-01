@@ -32,6 +32,10 @@ packet("", "", "", "", "", "", "", "35", "", "", "", "", "", Output).
 packet("", "", "2", "", "", "", "", "", "", "", "", "", "", Output).
 [ Expected result :- Output = drop. ]
 
+{ * Packet with alias notation for ethernet protocol * }
+packet("", "", "pppoe", "", "", "", "", "", "", "", "", "", "", Output).
+[ Expected result :- Output = reject. ]
+
 
 **NOTE**
 Outputs mentioned here are based on the initial set of rules present in the `rulesDatabase.pl` file.

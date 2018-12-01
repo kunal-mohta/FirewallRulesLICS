@@ -1,5 +1,5 @@
 :- include('main.pl').
-% :- include('encodedRules.pl').
+:- include('rulesDatabase.pl').
 
 % ----------------- Utilities ----------------- %
 
@@ -99,6 +99,12 @@ convertIpListToDecimal([Input|InputList], AccList, OutputList) :-
   convertIpListToDecimal(InputList, [ConvertedInput|AccList], OutputList),
   convertIpToDecimal(Input, ConvertedInput).
 
+% check for all values in a list, in a list
+checkListInList([], _).
+checkListInList([Val|ListOfVal], List) :-
+  checkListInList(ListOfVal, List),
+  member(Val, List).
+
 % ip in range
 ipInRange(IP, Start, Stop) :-
   split_string(IP, ".", "", SepIP),
@@ -131,28 +137,49 @@ checkListInRange([Input|InputList], Start, Stop) :-
   checkValInRange(Input, Start, Stop).
 
 % check range values of rules
-checkParamRange(ProtoParam, RangeStart, RangeStop) :-
-  string_chars(ProtoParam, ParamChars),
+checkParamRange(Param, RangeStart, RangeStop) :-
+  string_chars(Param, ParamChars),
   member('-', ParamChars),
-  split_string(ProtoParam, '-', '', [ParamStart, ParamStop]),
+  split_string(Param, '-', '', [ParamStart, ParamStop]),
   checkValInRange(ParamStart, RangeStart, RangeStop),
   checkValInRange(ParamStop, RangeStart, RangeStop),
   !.
 
-checkParamRange(ProtoParam, RangeStart, RangeStop) :-
-  string_chars(ProtoParam, ParamChars),
+checkParamRange(Param, RangeStart, RangeStop) :-
+  string_chars(Param, ParamChars),
   member(',', ParamChars),
-  split_string(ProtoParam, ',', '', ParamList),
+  split_string(Param, ',', '', ParamList),
   checkListInRange(ParamList, RangeStart, RangeStop),
   !.
 
-checkParamRange(ProtoParam, RangeStart, RangeStop) :-
-  checkValInRange(ProtoParam, RangeStart, RangeStop).
+checkParamRange(Param, RangeStart, RangeStop) :-
+  checkValInRange(Param, RangeStart, RangeStop).
 
 % ----------------- ADAPTER CLAUSE ----------------- %
 mainStr(["A", "B", "C", "D", "E", "F", "G", "H"]).
 
 % ----------------- Parsing Rules ----------------- %
+
+checkRangeAdapter(Param) :-
+  string_chars(Param, ParamChars),
+  member('-', ParamChars),
+  split_string(Param, '-', '', [ParamStart, ParamStop]),
+  mainStr(MainStr),
+  member(ParamStart, MainStr),
+  member(ParamStop, MainStr),
+  !.
+
+checkRangeAdapter(Param) :-
+  string_chars(Param, ParamChars),
+  member(',', ParamChars),
+  split_string(Param, ',', '', ParamList),
+  mainStr(MainStr),
+  checkListInList(ParamList, MainStr),
+  !.
+
+checkRangeAdapter(Param) :-
+  mainStr(MainStr),
+  member(Param, MainStr).
 
 adapter(Id, ResponseTerm) :-
   rule(Rule),
@@ -172,10 +199,14 @@ adapterHandle(ParamPart, Param) :-
   member('(', ParamChars),
   member(')', ParamChars),
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  checkRangeAdapter(MainParamPart),
+  checkRangeAdapter(Param),
   not(adapterHandle(MainParamPart, Param)).
 
 % normal
 adapterHandle(ParamPart, Param) :-
+  checkRangeAdapter(ParamPart),
+  checkRangeAdapter(Param),
   split_string(ParamPart, ',', '', ParamPartList),
   member(Param, ParamPartList).
 
@@ -183,6 +214,8 @@ adapterHandle(ParamPart, Param) :-
 adapterHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
+  checkRangeAdapter(ParamPart),
+  checkRangeAdapter(Param),
   split_string(ParamPart, ',', '', ParamList),
   member(Param, ParamList).
 
@@ -191,6 +224,8 @@ adapterHandle(ParamPart, Param) :-
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', ParamEnds),
+  checkRangeAdapter(ParamPart),
+  checkRangeAdapter(Param),
   mainStr(MainStr),
   getSubList(MainStr, ParamEnds, ParamList, [], 0),
   member(Param, ParamList).
@@ -212,14 +247,6 @@ checkRangeEtherVlan(Param) :-
 
 % % % %
 
-% etherProto(ProtoId, ResponseTerm) :-
-%   rule(Rule),
-%   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
-%   checkRangeEtherProto(ProtoIdPart),
-%   term_string(ResponseTerm, ResponseString),
-%   etherHandle(ProtoIdPart, ProtoId, 0),
-%   !.
-
 etherProto(ProtoId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "proto", ProtoIdPart]),
@@ -230,14 +257,6 @@ etherProto(ProtoId, ResponseTerm) :-
 % wrong rule / wrong package / no rule matched
 etherProto(_, accept).
 
-% etherVlan(VId, ResponseTerm) :-
-%   rule(Rule),
-%   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart]),
-%   checkRangeEtherVlan(VIdPart),
-%   term_string(ResponseTerm, ResponseString),
-%   etherHandle(VIdPart, VId, 0),
-%   !.
-
 etherVlan(VId, ResponseTerm) :-
   rule(Rule),
   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart]),
@@ -247,16 +266,6 @@ etherVlan(VId, ResponseTerm) :-
 
 % wrong rule / wrong package / no rule matched
 etherVlan(_, accept).
-
-% etherProtoVlan(ProtoId, VId, ResponseTerm) :-
-%   rule(Rule),
-%   split_string(Rule, " ", "", [ResponseString, "ether", "vid", VIdPart, "proto", ProtoIdPart]),
-%   checkRangeEtherProto(ProtoIdPart),
-%   checkRangeEtherVlan(VIdPart),
-%   term_string(ResponseTerm, ResponseString),
-%   etherHandle(ProtoIdPart, ProtoId, 1),
-%   etherHandle(VIdPart, VId, 0),
-%   !.
 
 etherProtoVlan(ProtoId, VId, ResponseTerm) :-
   rule(Rule),
@@ -286,6 +295,7 @@ etherHandle(ParamPart, Param, RangeCheckIndex) :-
   member('(', ParamChars),
   member(')', ParamChars),
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  rangeCheckEtherHandle(RangeCheckIndex, MainParamPart, Param),
   not(etherHandle(MainParamPart, Param, RangeCheckIndex)).
 
 % range
@@ -324,7 +334,7 @@ etherHandle("any", Param, _) :-
   not(Param = "").
 
 % aliases
-etherHandle(ProtoAlias, _, _) :-
+etherHandle(_, ProtoAlias, _) :-
   aliasList(AliasList),
   member(ProtoAlias, AliasList).
 
@@ -371,11 +381,14 @@ tcpHandle(PortPart, Port) :-
   member('(', PortChars),
   member(')', PortChars),
   split_string(PortPart, "!()", "", [_, _, MainPortPart, _]),
+  checkRangeTcpUdpPort(MainPortPart),
+  checkRangeTcpUdpPort(Port),
   not(tcpHandle(MainPortPart, Port)).
 
 % range
 tcpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
+  checkRangeTcpUdpPort(Port),
   string_chars(PortPart, PortChars),
   member('-', PortChars),
   split_string(PortPart, '-', '', [Start, Stop]),
@@ -391,6 +404,7 @@ tcpHandle(PortPart, Port) :-
 % comma-separated
 tcpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
+  checkRangeTcpUdpPort(Port),
   string_chars(PortPart, PortChars),
   member(',', PortChars),
   split_string(PortPart, ',', '', PortList),
@@ -401,6 +415,7 @@ tcpHandle(PortPart, Port) :-
 % normal
 tcpHandle(PortPart, ConvertedPortPart) :-
   checkRangeTcpUdpPort(PortPart),
+  checkRangeTcpUdpPort(ConvertedPortPart),
   convertToDecimal(PortPart, ConvertedPortPart).
 
 % any
@@ -442,11 +457,14 @@ udpHandle(PortPart, Port) :-
   member('(', PortChars),
   member(')', PortChars),
   split_string(PortPart, "!()", "", [_, _, MainPortPart, _]),
+  checkRangeTcpUdpPort(MainPortPart),
+  checkRangeTcpUdpPort(Port),
   not(udpHandle(MainPortPart, Port)).
 
 % range
 udpHandle(PortPart, Port) :-
   checkRangeTcpUdpPort(PortPart),
+  checkRangeTcpUdpPort(Port),
   string_chars(PortPart, PortChars),
   member('-', PortChars),
   split_string(PortPart, '-', '', [Start, Stop]),
@@ -461,8 +479,9 @@ udpHandle(PortPart, Port) :-
 
 % comma-separated
 udpHandle(PortPart, Port) :-
-  string_chars(PortPart, PortChars),
   checkRangeTcpUdpPort(PortPart),
+  checkRangeTcpUdpPort(Port),
+  string_chars(PortPart, PortChars),
   member(',', PortChars),
   split_string(PortPart, ',', '', PortList),
   convertListToDecimal(PortList, [], ConvertedPortList),
@@ -472,6 +491,7 @@ udpHandle(PortPart, Port) :-
 % normal
 udpHandle(PortPart, ConvertedPortPart) :-
   checkRangeTcpUdpPort(PortPart),
+  checkRangeTcpUdpPort(ConvertedPortPart),
   convertToDecimal(PortPart, ConvertedPortPart).
 
 % any
@@ -522,11 +542,14 @@ icmpHandle(ParamPart, Param) :-
   member('(', ParamChars),
   member(')', ParamChars),
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  checkRangeTypeCode(MainParamPart),
+  checkRangeTypeCode(Param),
   not(icmpHandle(MainParamPart, Param)).
 
 % range
 icmpHandle(ParamPart, Param) :-
   checkRangeTypeCode(ParamPart),
+  checkRangeTypeCode(Param),
   string_chars(ParamPart, ParamChars),
   member('-', ParamChars),
   split_string(ParamPart, '-', '', [Start, Stop]),
@@ -542,6 +565,7 @@ icmpHandle(ParamPart, Param) :-
 % comma-separated
 icmpHandle(ParamPart, Param) :-
   checkRangeTypeCode(ParamPart),
+  checkRangeTypeCode(Param),
   string_chars(ParamPart, ParamChars),
   member(',', ParamChars),
   split_string(ParamPart, ',', '', ParamList),
@@ -552,6 +576,7 @@ icmpHandle(ParamPart, Param) :-
 % normal
 icmpHandle(ParamPart, ConvertedParamPart) :-
   checkRangeTypeCode(ParamPart),
+  checkRangeTypeCode(ConvertedParamPart),
   convertToDecimal(ParamPart, ConvertedParamPart).
 
 % any
@@ -645,6 +670,7 @@ ipHandle(ParamPart, Param, RangeCheckIndex) :-
   member('(', ParamChars),
   member(')', ParamChars),
   split_string(ParamPart, "!()", "", [_, _, MainParamPart, _]),
+  rangeCheckIpHandle(RangeCheckIndex, MainParamPart, Param),
   not(ipHandle(MainParamPart, Param, RangeCheckIndex)).
 
 % range

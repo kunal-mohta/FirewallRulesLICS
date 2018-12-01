@@ -20,7 +20,7 @@ $ swipl index.pl
 - Sample rules are preloaded, and can be found in `rulesDatabase.pl` file. You can edit the rules (add / delete / modify) in the same file.
 Please find format to write rules under the `RULES FORMAT` heading in this file.
 
-- You are ready to use the program. Please find the format to write input packets under the `INPUT FORMAT` heading in this file.
+- You are now ready to use the program. Please find the format to write input packets under the `INPUT FORMAT` heading in this file.
 ```
 ?- packet(...).
 ```
@@ -52,7 +52,7 @@ INPUT FORMAT
 
 Inputs are given in the form of packets having properties related to the clauses/conditions.
 
-For this program, inputs are given by `packet/14` predicates, following the following format -
+For this program, inputs are given by `packet/14` predicates, following the format -
 
 ```
 packet(
@@ -72,30 +72,27 @@ packet(
   Output).
 ```
 
-The first 13 parameters should be strings, representing the mentioned clause/condition parameter (e.g. <tcp-src-port> refers to the src port number for the TCP condition), and the last parameter gives the Action taken for the packet, i.e. `accept / reject / drop`.
+The first 13 parameters should be strings, representing the mentioned clause/condition parameter (e.g. <tcp-src-port> refers to the src port number for the TCP condition), and the last parameter (Output) gives the Action taken for the packet, i.e. `accept / reject / drop`.
 
 If you want a clause/condition parameter to be not specified in the packet, just put an empty string ("") in its place.
 
 **Note** that the Clause/Condition parameters here can have only a single value, i.e. no range/comma-separated lists, like the ones mentioned in `CLAUSES.txt` file.
+Range/Comma-separated lists are valid syntax for clauses in rules only.
 
 Examples for input packets -
 ```
 ?- packet("A", "0x0800", "0x0801", "600", "100", "64", "", "111", "100", "192.167.10.1", "192.167.10.255", "", "123", Output).
-Output = drop
 
 ?- packet("E", "", "0x0804", "101", "", "9", "101", "", "225", "", "192.167.10.33", "", "", Output).
-Output = accept
 
 ?- packet("G", "0x0808", "", "130", "", "0x321", "", "0123", "", "192.167.10.2", "", "", "", Output).
-Output = reject
-
+```
 
 **IMPORTANT**
 In the above syntax, please take care of where the spaces are. Using them at wrong places might lead to faulty results.
 For example,
 'ip src addr 192.168.10.1, 192.168.10.10' is not a valid syntax, because of the space after the comma.
 
-```
 
 ***********************************************************************
 
@@ -104,9 +101,8 @@ IMPORTANT INFORMATION RELATED TO THE FUNCTIONALITY OF THE PROGRAM
 - Clauses having multiple optional parameters should be dealt with carefully. Their permutation follow a strict fashion.
 For Example -
 The 2 separate rules - 'accept tcp src addr 192.168.17.10' and 'accept tcp dst addr 192.168.17.15'
-are NOT THE SAME as the single rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15'
-Both are treated differently.
-For Example, considering the rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15', the only packet that will match this will be the one where BOTH src and dst parameters match the rule. Individual matching of the parameters is not sufficient.
+are NOT THE SAME as the single rule 'accept tcp dst addr 192.168.17.15 src addr 192.168.17.10'
+Both are treated differently, i.e. considering the rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15', the only packet that will match this will be the one where BOTH src and dst parameters match the rule. Individual matching of the parameters is not sufficient.
 
 - There might be situations where multiple rules apply to the given packet.
 These rules might collide with each other's result. In such situations, the following convention is followed -
@@ -125,6 +121,9 @@ These rules might collide with each other's result. In such situations, the foll
     (i) Octal - '0', e.g. 10 = 012
     (ii) Hexadecimal - '0x', e.g. 35 = 0x23
     (iii) Decimal - No prefix
+
+- Range-type parameters should follow the order of minimum value followed by maximum value. Wrong order will give ambiguous results.
+For example- `35-10` is wrong syntax, and will not give the correct results
 
 - NOT expressions should be used carefully. Only valid expressions should be used inside !(...). Using invalid expressions will lead to ambiguous results. For example !(asdf) is invalid for any clause/condition.
 
