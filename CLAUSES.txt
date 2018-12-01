@@ -51,6 +51,8 @@ Syntax for rule:-
   - ip proto `<protocol-type>`
   - ip src addr `<ipv4-addr>` dst addr `<ipv4-addr>` proto `<protocol-type>`
 
+(NOTE that other combinations are NOT ALLOWED, i.e. src with proto, dst with proto, addr with proto, etc.)
+
 Possible IPv4 addr values:-
   - Values of the form `n.n.n.n`
   where `n` is a number between 0 & 255 (allowed in decimal, octal, hexadecimal)

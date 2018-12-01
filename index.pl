@@ -107,17 +107,13 @@ checkListInList([Val|ListOfVal], List) :-
 
 % ip in range
 ipInRange(IP, Start, Stop) :-
-  split_string(IP, ".", "", SepIP),
-  atomics_to_string(SepIP, "", StringIP),
-  split_string(Start, ".", "", SepStart),
-  atomics_to_string(SepStart, "", StringStart),
-  split_string(Stop, ".", "", SepStop),
-  atomics_to_string(SepStop, "", StringStop),
-  number_string(NumIP, StringIP),
-  number_string(NumStart, StringStart),
-  number_string(NumStop, StringStop),
-  NumIP >= NumStart,
-  NumIP =< NumStop.
+  split_string(IP, ".", "", [FirstIp, SecondIp, ThirdIp, FourthIp]),
+  split_string(Start, ".", "", [FirstStart, SecondStart, ThirdStart, FourthStart]),
+  split_string(Stop, ".", "", [FirstStop, SecondStop, ThirdStop, FourthStop]),
+  checkValInRange(FirstIp, FirstStart, FirstStop),
+  checkValInRange(SecondIp, SecondStart, SecondStop),
+  checkValInRange(ThirdIp, ThirdStart, ThirdStop),
+  checkValInRange(FourthIp, FourthStart, FourthStop).
 
 % check value in range
 checkValInRange(Value, Start, Stop) :-

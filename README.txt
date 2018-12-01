@@ -1,4 +1,4 @@
-FIREWALL RULES IN PROLOG - LOGIN IN COMPUTER SCIENCE
+FIREWALL RULES IN PROLOG - LOGIC IN COMPUTER SCIENCE
 
 This project is the Prolog Assignment, for Logic in Computer Science (CS F214) course, at BITS Pilani.
 
@@ -98,11 +98,12 @@ For example,
 
 IMPORTANT INFORMATION RELATED TO THE FUNCTIONALITY OF THE PROGRAM
 
-- Clauses having multiple optional parameters should be dealt with carefully. Their permutation follow a strict fashion.
+- Clauses having multiple optional parameters should be dealt with carefully. Their permutation follow a STRICT fashion.
 For Example -
 The 2 separate rules - 'accept tcp src addr 192.168.17.10' and 'accept tcp dst addr 192.168.17.15'
 are NOT THE SAME as the single rule 'accept tcp dst addr 192.168.17.15 src addr 192.168.17.10'
-Both are treated differently, i.e. considering the rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15', the only packet that will match this will be the one where BOTH src and dst parameters match the rule. Individual matching of the parameters is not sufficient.
+Both are treated differently, i.e. considering the rule 'accept tcp src addr 192.168.17.10 dst addr 192.168.17.15', the only packet that will match this will be the one where BOTH src and dst parameters match the rule, and not the ones where only one of the parameter matches.
+Similarly, packets which specify both src and dst parameter will look only for rules having both the parameter mentioned.
 
 - There might be situations where multiple rules apply to the given packet.
 These rules might collide with each other's result. In such situations, the following convention is followed -
