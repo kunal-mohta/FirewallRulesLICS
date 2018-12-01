@@ -87,6 +87,7 @@ Examples for input packets -
 
 ?- packet("G", "0x0808", "", "130", "", "0x321", "", "0123", "", "192.167.10.2", "", "", "", Output).
 ```
+More sample inputs can be found in `SampleInputs.txt`
 
 **IMPORTANT**
 In the above syntax, please take care of where the spaces are. Using them at wrong places might lead to faulty results.
